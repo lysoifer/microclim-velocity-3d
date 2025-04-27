@@ -1,0 +1,259 @@
+---
+date: "`r Sys.Date()`"
+author: "Lydia G. Soifer, James Ball, Hamish Asmath, Ilya M. D. Maclean, and David Coomes"
+title: "Multidimensional microclimate velocities alter the picture of shifting climates"
+bibliography : "r-references.bib"
+csl: "nature-climate-change.csl"
+output: 
+  officedown::rdocx_document:
+    reference_docx: "style_guide.docx"
+    plots:
+      style: figure
+      align: center
+      caption:
+        style: Legend
+    tables:
+      caption:
+        style: table_caption
+        
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.cap = TRUE, warning = FALSE, message = FALSE)
+library(officedown)
+library(officer)
+library(flextable)
+library(ftExtra)
+library(tidyverse)
+library(patchwork)
+library(knitr)
+library(here)
+library(chunkhooks)
+
+fp <- fp_par(
+  text.align = "center", 
+  padding.bottom = 20, padding.top = 120, 
+  border.bottom = fp_border())
+
+ft <- fp_text(shading.color='#EFEFEF', bold = TRUE)
+
+hook_figure_unit("mm")
+
+rsq = function(x) {
+  r2 = ifelse(x < 0.01, "\u003C 0.001", paste0("= ", format(round(x, 2), nsmall = 2)))
+  return(r2)
+}
+```
+
+
+\newpage
+
+# Abstract
+
+Climate velocity describes expected speeds and directions at which species must move to track local climate change. Macroclimates often used to calculate climate velocity fail to represent fine-scale climatic variation impacting species’ distributions. We use a mechanistic microclimate model parameterized using lidar-derived data of vegetation structure and topography and macroclimate data spanning 55 years to examine impacts of topography and vegetation on microclimate velocities in two and three dimensions within a tropical montane moist forest. Incorporating forest structure in the models greatly reduced climate velocity and produced velocity vectors pointed towards denser forest. When omitting forest structure, vectors shifted toward higher elevations. Three-dimensional climate velocities, which account for vertical temperature gradients within forests, further reduced speeds of expected shifts in distribution and produced velocity vectors directed from the canopy toward the understory. Microclimate variability, which reduced climate velocity, may therefore allow local population persistence in the face of climate change.
+
+\newpage
+
+Climate change is causing the redistribution of species globally, with range shifts generally occurring toward higher latitudes and elevations [@chenRapidRangeShifts2011; @lawlorMechanismsDetectionImpacts2024; @parmesanGloballyCoherentFingerprint2003]. However, the rate and direction of range shifts varies substantially [@lawlorMechanismsDetectionImpacts2024; @lenoirSpeciesBetterTrack2020; @rubensteinClimateChangeGlobal2023]. Climate velocity indicates how quickly and in which direction suitable climatic conditions for species are shifting due to climate change [@burrowsPaceShiftingClimate2011; @loarieVelocityClimateChange2009]. This conceptually simple metric is calculated by dividing the rate of climate change over time by the rate of climate change over space [@burrowsPaceShiftingClimate2011; @loarieVelocityClimateChange2009] and estimates the distance per year a species occurring at any given location would have to move to keep pace with climate change. Range shifts often lag behind rates of climate velocity, suggesting species are unable to migrate fast enough to keep pace with the effects of global warming [@feeleyUpslopeMigrationAndean2011; @lenoirSpeciesBetterTrack2020]. However, analyses based on macroclimate change (i.e., above-vegetation air conditions at spatial scales of ~ 1 km or greater [@burrowsPaceShiftingClimate2011; @dobrowskiClimateVelocityContiguous2013; @loarieVelocityClimateChange2009]) overlook the role of microclimatic variation, which may provide important climatic refugia [@haesenMicroclimateRevealsTrue2023; @lembrechtsIncorporatingMicroclimateSpecies2019; @lenoirClimaticMicrorefugiaAnthropogenic2017; @macleanMacroclimateDataOverestimate2023].
+
+Forests are three-dimensional ecosystems where complex vegetative structure produces microclimatic variability, both horizontally along the forest floor and vertically within the canopy, that influences the distributions of terrestrial and arboreal species [@defrenneForestMicroclimatesClimate2021; @lenoirClimaticMicrorefugiaAnthropogenic2017; @scheffersIncreasingArborealityAltitude2013]. Variability in canopy cover generates fine-scale thermal variation across the land surface, because canopies buffer understory microclimates, reducing maximum temperatures relative to those experienced in open habitats[@defrenneForestMicroclimatesClimate2021; @lenoirClimaticMicrorefugiaAnthropogenic2017]. Additionally, canopies produce steep vertical climate gradients that add another dimension of thermal variability along which species assemblages are stratified [@bashamVerticalStratificationPatterns2023a; @xingEcologicalPatternsProcesses2023]. This vertical gradient stretches from the understory, which experiences lower light conditions and lower climatic variation, to the upper canopy, which experiences greater climatic variation, including hotter maximum temperatures [@defrenneForestMicroclimatesClimate2021]. Indeed, the increase in temperature across just 20 m from the ground to the canopy can be up to 1.6 times the change in temperature across 200 m in elevation [@scheffersIncreasingArborealityAltitude2013]. Moving short distances within thermally complex forests may therefore reduce thermal mismatches between species' thermal niches and novel climate conditions. For example, the ranges of arboreal species could shift toward lower canopy positions to reduce exposure to high temperatures experienced in tropical canopies [@bashamVerticalStratificationCollapses2020; @scheffersIncreasingArborealityAltitude2013]. However, a paucity of microclimate data at large spatiotemporal extents has limited our capacity to quantify the impact of microclimatic variability on climate velocity.
+
+We use recent advances in mechanistic microclimate modeling [@macleanMicroclimfFastCanopy2021] that combine fine scale lidar data on vegetation structure with macroclimate data to predict microclimates and microclimate velocities in two dimensions across the land surface and three dimensions within forest canopies (Fig. \@ref(fig:concept-fig)). The microclimate model uses the physical laws of thermodynamics to predict temperature and humidity at designated heights above the ground and at a fine spatial scale (< 1 km resolution) across large spatial extents. The model connects macroclimate data to local microclimate conditions based on the impacts of topography and vegetation on short-wave radiation, long-wave radiation, and wind speed. We first modeled above-canopy topoclimate at a 100 m resolution by mechanistically downscaling ERA5 macroclimate data [@copernicusclimatechangeservicec3sERA5FifthGeneration2017] using a 100 m resolution topographic map, which was obtained by coarsening a 1 m digital elevation model (DEM) derived from a 1100 km^2^ airborne lidar survey of the Northern Range of Trinidad made in 2014 [@macleanMicroclimaPackageModelling2019]. This topoclimate model represents ambient air climate conditions that account for impacts of topography but not vegetation on climatic variability. We then modeled land surface microclimates at 2 m above the ground at a 20 x 20 m resolution and within 20 x 20 x 5 m voxels from the ground to the top of the canopy across the entire mountain chain, which spans 900 m in elevation. These microclimate models integrate a 20 m DEM with lidar derived data on the vertical distribution of leaf density to account for impacts of vegetation on microclimate variability in two and three dimensions. We chose a 20 m horizontal resolution based on a sensitivity analysis to determine a cell size that captured fine-scale variation in vegetation structure while minimizing outliers (Supplementary Material). We produced topoclimate and microclimate models for the years 1960 and 2015 (see methods). Though changes in vegetation over time may reduce the accuracy of microclimate predictions for 1960, we assume that the vegetation structure depicted in the 2014 lidar survey represents vegetation structure across the 55 year time frame because repeat lidar surveys were not available.
+
+Using topoclimate and microclimate maps of average maximum daily temperature modeled for the years 1960 and 2015 across the Northern Range of Trinidad, we calculated above-canopy topoclimate velocity at a 100 m resolution, land-surface microclimate velocity at a 20 m resolution at 2 m above the ground, and within-canopy 3D microclimate velocity at a 20 m horizontal resolution x 5 m vertical resolution (see methods). We calculate climate velocity for maximum temperature, because it generally defines the limits of species' ranges better than mean temperatures [@germainClimateExtremesMay2020]. Land surface microclimate velocities represent climatic conditions in the forest understory and represent the distance and direction that a ground-dwelling species at any given location would need to move to remain within similar climatic conditions as the climate changes. Furthermore, 3D microclimate velocities represent the distance and direction an arboreal species living in the upper half of the canopy would need to move in three-dimensional space to maintain the same temperature niche as the climate warms. We restrict 3D microclimate velocities to the upper half of the forest as measured from the ground to the canopy because species occupying the lower half of the canopy have little vertical distance over which they can move. We then compare these topoclimate velocity and microclimate velocity predictions to macroclimate velocity predictions at an \~1 km resolution, which we calculated from CHELSA climate data [@kargerClimatologiesHighResolution2017; @kargerDataClimatologiesHigh2021] for the same time period. 
+
+Building upon previous research addressing climate velocities at macroclimate and topoclimate scales[@burrowsPaceShiftingClimate2011; @dobrowskiClimateVelocityContiguous2013; @heikkinenFinegrainedClimateVelocities2020; @loarieVelocityClimateChange2009], we reexamine the distance and direction of climate velocities at finer spatial scales, which may improve estimates of range shifts. We also advance microclimate research by introducing a novel approach to climate velocity calculations in three-dimensional landscapes, which are pertinent to understanding redistributions in response to climate change in both terrestrial and marine ecosystems.
+
+```{r}
+source("scripts/03_analysis/02_compareScales/voccSpeed.R")
+vocc.summ = vocc.summ %>% column_to_rownames(var = "scale")
+vocc_summ = as.matrix(vocc.summ)
+```
+
+```{r}
+macro_tempgrad = rast("scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp/tempgrad.tif")
+minmax = minmax(macro_tempgrad) * 55
+```
+
+# Results
+## The Speed of Climate Velocity
+
+Maximum temperatures in the Northern Range of Trinidad warmed between `r round(minmax[1], 2)`°C and `r round(minmax[2], 2)`°C from 1960 to 2015 based on CHELSA climate data, with higher rates of warming at lower elevations (Extended Data Fig. \@ref(fig:tempgrad-map)). Combined with spatial rates of thermal variation, this warming resulted in topoclimate and macroclimate velocities that averaged 19 to 26 m/yr, but varied widely from 1 m/yr to over 800 m/yr (Table \@ref(tab:vocc-summ-tbl)). Climate velocities declined over 90% when increasing the resolution by accounting for the impacts of vegetative structure on microclimates. Under 2D and 3D microclimate velocity models, species would need to shift on average 1.87 m/yr along the ground surface or 0.15 m/yr within the canopy to remain within their climatic niche (Table \@ref(tab:vocc-summ-tbl)). Over 50 years, incorporating the impacts of topographic and vegetative complexity on microclimates and increasing the spatial resolution of climate data reduced the maximum distance that temperature isotherms shift within the Northern Range from `r round(vocc.summ["Macro", "max_vocc"] * 50/1000)` km at macroclimate scales, to `r round(vocc.summ["Land\nsurface", "max_vocc"] * 50/1000, 1)` km along the land surface, to just `r round(vocc.summ["Within-\ncanopy", "max_vocc"] * 50)` m within the three-dimensional forest canopy. These differences were driven by greater microclimatic heterogeneity at finer spatial scales, which increases the rate of climate change over space (the denominator of the climate velocity equation) [@dobrowskiClimateVelocityContiguous2013; @heikkinenFinegrainedClimateVelocities2020] (Extended Data Fig. \@ref(fig:spatgrad-map), Extended Data Fig. \@ref(fig:speed-plt)).
+
+```{r}
+#source("03_analysis/03_linearModels/model_summaries.R")
+source("scripts/03_analysis/02_voccAngles/voccAngles.R")
+```
+
+Spatial patterns of climate velocity also differed noticeably among macro-, topo-, land surface-, and 3D within-canopy predictions. At macro and topo scales, climate velocity generally declined toward higher elevations, because greater topographic variability in the mountains increases spatial climatic variability and thus decreases climate velocity (Fig. \@ref(fig:vocc-elev-pai-scatter)). These results reflect impacts of mountainous terrain on climate velocity that have been shown previously [@chanClimateVelocitiesSpecies2024; @loarieVelocityClimateChange2009]. In contrast, higher climate velocities in flat lowland rainforests may indicate that species with poor dispersal capacity will be unable to track climate change [@loarieVelocityClimateChange2009]. Microclimate velocity presented a different scenario. Land surface and 3D within-canopy velocities were highly variable across elevations but did not decline at high elevations as macro- and topo- climate velocities did (Fig. \@ref(fig:vocc-elev-pai-scatter)). Rather, the speed of land surface microclimate velocities declined in areas with low to intermediate PAI. This pattern arose because low PAI was associated with high spatial thermal variation (Extended Data Fig. \@ref(fig:tmaxSD-pai)), while dense vegetation may homogenize thermal buffering effects across space. Vegetative structures that generate thermal variability may therefore allow populations to persist locally, particularly in hotter environments, if they are not already restricted to the coolest microhabitats (Extended Data Fig. \@ref(fig:vocc-elev-pai)). 
+
+
+```{r}
+# correlation between elev and pai and macroscale
+library(terra)
+pai = rast("data/PAI/pai_NRange_rmMeters0to2_rmPAIgt10.tif")
+elev = rast("data/topography/dem_reproj.tif")
+macro = rast("scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp/vocc.tif")
+
+pai = resample(pai, macro)
+names(pai) = "pai"
+elev = resample(elev, macro)
+names(elev) = "elev"
+
+r = c(pai, elev)
+cor = layerCor(r, fun = "pearson", na.rm = T)[[1]][1,2]
+elev.pai.cor.r2 = round(cor^2, 2)
+
+```
+
+## The Direction of Climate Velocity
+
+To understand the impact of climate change, it is crucial to consider not only the rate, but also the direction in which species are expected to move as the climate warms. The traditional view assumes that species' ranges will shift poleward (toward higher latitudes) or toward higher elevations as species track their preferred thermal niche. However, empirical evidence challenges this notion. A recent study by Rubenstein et al.[@rubensteinClimateChangeGlobal2023] found that only 47% of documented range shifts align with these expectations, which may be attributed to numerous factors, including localized range shifts that are not detected by relatively coarse-scale analyses. However, microclimate data can detect variability in the direction of range shifts relative to macroclimate data, which predict largely poleward movement [@macleanMacroclimateDataOverestimate2023]. To explore the impact of spatial scale on the direction of climate velocity, we examined whether climate velocities were directed upslope or toward areas with denser vegetation using circular correlations [@jammalamadakaCorrelationCoefficientAngular; @tsagrisDirectionalCollectionFunctions2024] between the angle of climate velocity in the latitude-longitude plane and the angle that a species would need to move to reach higher elevations or denser vegetation. We then graphed the distribution of differences between the angle of climate velocity and the direction of higher elevation or denser vegetation to visualize these correlations (Fig. \@ref(fig:vocc-dir)).
+
+As expected, the directions of macro- and topo- climate velocities were strongly correlated with the direction a species would need to move to reach a higher elevation (R^2^ = `r round(macro.upslope.cor[1]^2,2)` and `r round(meso.upslope.cor[1]^2,2)`, respectively) and not with the direction a species would need to move to reach denser vegetation (R^2^ = `r round(macro.pai.cor[1]^2,2)` and `r ifelse(round(meso.pai.cor[1]^2,2) < 0.001, "<0.001", round(meso.pai.cor[1]^2,2))`, respectively). Small differences between the direction of most velocity vectors in the latitude-longitude plane and the direction of higher elevations, support the pervasive view that species' ranges will shift upslope (Fig. \@ref(fig:vocc-dir), \@ref(fig:vocc-dir2)). In contrast, land surface microclimate velocities were generally directed toward denser vegetation (R^2^ = `r round(micro2d.pai.cor[1]^2,2)`) and exhibited a relatively uniform distribution with respect to the direction of higher elevation (R^2^ = `r round(micro2d.upslope.cor[1]^2,2)`). Lower maximum temperatures in areas with denser vegetation produce this pattern (Extended Data Fig. \@ref(fig:temp-pai)) and provide refuge for species as the climate warms. Though macroclimate velocity vectors also appear frequently directed toward denser vegetation, this association is likely due to the positive correlation between PAI and elevation at large spatial scales (R^2^ = `r elev.pai.cor.r2`), increasing the probability that range shifts toward higher elevations would correspond to range shifts toward denser vegetation (Extended Data Fig. \@ref(fig:elev-pai)).
+
+```{r}
+source("scripts/03_analysis/02_voccAngles/voccAngles.R")
+```
+
+
+The direction of 3D microclimate velocities within forest canopies was not associated with either the direction of higher elevation (R^2^ = `r round(micro3d.upslope.cor[1]^2,2)`) or the direction of denser vegetation (R^2^ `r rsq(micro3d.pai.cor[1]^2)`). Rather, `r round(down_vectors*100)`% of within-canopy 3D microclimate velocity vectors were directed vertically downward. Of these downward pointing vectors, `r round(vh_ratio.down, 2) * 100`% exhibited greater vertical than horizontal movement (Supplementary Figure). This pattern suggests that arboreal species could move toward the cooler understory in response to warming temperatures, similarly to the vertical range shifts that have been observed in marine ecosystems, where vertical climate velocities also exceed horizontal climate velocities [@dulvyClimateChangeDeepening2008; @jordaOceanWarmingCompresses2020; @pinskyMarineTaxaTrack2013]. In terrestrial ecosystems, vertical shifts in habitat use have been documented across short spatial and temporal gradients [@bashamVerticalStratificationCollapses2020; @scheffersIncreasingArborealityAltitude2013]. For example, the distribution of arboreal frogs during the dry season shifts toward lower positions in the canopy, which are buffered from hydric fluctuations experienced in the upper canopy [@bashamVerticalStratificationCollapses2020]. If arboreal species increasingly use understory habitats in accordance with 3D microclimate velocities, vertically stratified assemblages of species in tropical forests may become compressed toward the ground in response to climate change [@oliveiraVerticalStratificationInfluences2019; @scheffersIncreasingArborealityAltitude2013]. 
+
+```{r}
+# downward trajectory measuruements are in voccAngles.R at the end but commented out to reduce run time
+```
+
+# Discussion
+
+Incorporating microclimatic variability into range shift assessments often enhances prediction accuracy and reveals greater persistence of suitable habitat [@lenoirClimaticMicrorefugiaAnthropogenic2017; @macleanMacroclimateDataOverestimate2023]. Our findings support these results, demonstrating that macroclimate velocities may overestimate the distance individuals must move to keep pace with local climatic changes in forested environments. While incorporating microclimate heterogeneity into climate velocity estimates may make the metric more relevant to some species, microclimate velocity is not universally applicable because the scale at which climatic variability impacts species' distributions varies widely across taxa and populations. For example, species that respond to large-scale climate gradients and are uninhibited by geographic barriers may track macroclimate velocities, while species that are sessile or have limited dispersal capacity, such as herbaceous plants, insects, and amphibians, may be more sensitive to microclimate variability [@haesenMicroclimateRevealsTrue2023; @macleanMacroclimateDataOverestimate2023; @pincebourdeTherePlentyRoom2020; @scheffersAspleniumBirdNest2014]. For these species, small microclimate velocities may suggest that short distance movements within thermally variable environments allow populations threatened by climate warming to persist locally, as long as they are not already restricted to the coolest microhabitats in the region [@lenoirClimaticMicrorefugiaAnthropogenic2017; @macleanMacroclimateDataOverestimate2023; @pincebourdeTherePlentyRoom2020; @suggittExtinctionRiskClimate2018]. However, at warm range edges, where populations are often restricted to the coolest microhabitats, local thermal variability will not enable persistence. Long-term occurrence records detailing microhabitat occupancy across multidimensional climate gradients in tropical forests are needed to evaluate the relevancy of land surface and 3D microclimate velocities to changes in occupancy patterns as the climate warms.
+
+Furthermore, the microclimate velocities we estimate are subject to several limitations. First, the ground presents a structural limit to vertical range shifts. Over 55 years, 3D microclimate velocities with downward trajectories would result in species moving a median of 8 m and a maximum of 49 m toward the ground. For 11.2% of these downward facing vectors, species would reach the ground within 55 years. For light dependent organisms, such as epiphytes, reduced light availability in the lower canopy may make these environments inhospitable , preventing vertical range shifts [@jordaOceanWarmingCompresses2020]. After reaching the limits of vertical habitat space, arboreal species would be expected to move at the rate and in the direction of land surface climate velocities. Secondly, without repeat lidar surveys to capture changes in vegetation structure over time, we are unable to detect changes in thermal buffering that may occur due to climate change. As long as water does not become limiting, thermal buffering by the canopy is likely to remain stable or increase as the climate warms [@defrenneGlobalBufferingTemperatures2019]. However, under drought conditions, water stress reduces evaporative cooling, which decreases the buffering capacity of vegetation [@defrenneForestMicroclimatesClimate2021] and consequently increases microclimate velocities relative to our calculations. Lastly, species may respond more strongly to climatic gradients related to water availability, such as humidity or vapor pressure deficit, which may have velocity vectors in different directions, thus limiting the extent to which they track temperature velocities [@dobrowskiClimateVelocityContiguous2013]. Understanding these complexities is essential for predicting how climate change will continue to shape species distributions.
+
+Examining the relevance of microclimate velocities to changes in distribution is critical in regions where macroclimate velocities have led to predictions of negative biodiversity outcomes. For example, in tropical lowlands, flat landscapes produce rapid macroclimate velocities that would require populations to move long distances to keep pace with climate change [@loarieVelocityClimateChange2009]. Poor dispersal ability may limit movement over such distances[@lenoirClimaterelatedRangeShifts2015], potentially leading to an accumulating extinction debt[@figueiredoUnderstandingExtinctionDebts2019]. Populations on mountaintops will face similar challenges, where an absence of higher elevations restricts their ability to move upward. Conservation measures, such as assisted colonization, have been proposed to facilitate long-distance range shifts. However, such measures are often impractical and risk adverse impacts on native communities [@ricciardiAssistedColonizationNot2009]. Slow land surface and 3D microclimate velocities directed toward denser vegetation and lower canopy positions highlight the potential role of local climate variability in mitigating range contractions. By exploiting local multidimensional microclimatic variation generated by structurally complex vegetation, species could move short distances to areas with denser vegetation or to lower canopy positions in response to climate change. Conservation efforts focused on maintaining and increasing microclimatic heterogeneity may therefore contribute to safeguarding biodiversity in-situ by reducing range shift requirements [@greenwoodUsingSituManagement2016].
+
+# Online Methods
+
+All analyses took place in the Northern Range of Trinidad, a Caribbean Island that lies off the coast of Venezuela between 61.93° and -60.91° longitude and 10.04° and 10.84° latitude.
+
+## Microclimate Models
+
+We mechanistically modelled average daily maximum temperature for 1960 and 2015 at topo- and micro- scales based on ERA5 macroclimate data and fine-resolution maps of topography and vegetation structure. These years were chosen because they best represented average temperatures during the decades 1951-1960 and 2011-2020. We modelled topoclimate, which accounts for the influence of topography but not vegetation on climate, at a 100 m resolution using the R package 'microclima' [@macleanMicroclimaPackageModelling2019]. We modelled microclimate at a 20 m resolution using the R package 'microclimf', which is based on first principles of energy conservation [@macleanMicroclimfFastCanopy2021]. The microclimate model applies a topographic correction for adiabatic lapse rate and then estimates microclimate parameters by solving for the Penman-Monteith equation assuming the relationships between sensible heat fluxes and latent heat fluxes remain in balance. Microclimate models account for the influence topography and vegetation structure on short-wave radiation, long-wave radiation, and wind speed and were produced at 2 m above the ground and then from 5 m to 40 m above the ground at 5 m intervals (i.e., 2 m, 5 m, 10 m, etc.) (see supplementary material for detailed description of methods). We averaged maximum daily temperatures across the entire year to produce a single raster for each spatial scale and height above the ground.
+
+Model inputs included spatially gridded data describing macroclimate, topography, vegetation structure and characteristics, soil type, and habitat type. Gridded climate data were obtained from ERA5 [@copernicusclimatechangeservicec3sERA5FifthGeneration2017] using the 'mcera5' R package [@duffyMcera5ToolsAcquire2021] at a ~25 km resolution and at hourly time intervals for 1960 (hereafter 'past') and 2015 (hereafter 'present'). Topography and vegetation layers were derived from discrete return airborne Light Detection and Ranging (LiDAR) data, which was collected in June 2014. The consultant provided classifications for last return ground points and non-ground points, which were then kriged in ArcMap 10.5 to develop a digital elevation model (DEM) of ground points and a digital surface model (DSM) of non-ground points at a 1 m resolution. A canopy height model (CHM) was developed by subtracting the DEM from the first return non-ground points. The height of each point above the ground was computed in LASTools using all the LiDAR returns and the 'lasheight' function [@isenburgLASToolsEffecientLiDAR2014]. Plant area index (PAI; m2/m2) and plant area density (PAD; m2/m3), were estimated at a 20 m horizontal resolution and 1 m vertical resolution based on the Beer-Lambert law for light transmittance through a turbid medium and assuming an extinction coefficient of 0.5 [@milodowskiImpactLoggingVertical2021]. We estimated PAI and PAD seasonality by modelling monthly fluctuation in MODIS LAI with a generalized additive mixed model and applying a standard offset across all months based on the difference in MODIS LAI and LiDAR PAI (see supplementary material for further details).
+
+We mapped soil type according to the USDA soil classification triangle and sand, silt, and clay content obtained from the SoilGrids database at a 250 m resolution [@moeysSoiltextureFunctionsSoil2018; @poggioSoilGridsProducingSoil2021]. We obtained habitat type data from a classification of Trinidadian vegetation [@helmerDetailedMapsTropical2012] and reclassified them to those specified in the 'microclimf' R package to estimate other vegetation parameters, including the ratio of vertical to horizontal leaf foliage, maximum stomatal conductance, leaf reflectance, canopy clumpiness, and leaf diameters [@macleanMicroclimfFastCanopy2021] (Supplementary material).
+
+We obtained maximum daily temperature at a 30 arc second (\~1 km) resolution for 1980 and 2015 from CHELSA version 2.1 [@kargerClimatologiesHighResolution2017; @kargerDataClimatologiesHigh2021] to represent a readily accessible macroclimate data source that could easily be used to calculate macroclimate velocities across large extents. Because CHELSA data was not available for 1960, we estimated the 1960 climate based on offsets between CHELSA and ERA5 data. Maximum daily temperatures for 1960 and 2015 were then averaged across months to produce a single raster for each year.
+
+To model microclimates in the Northern Range from remotely sensed data, we had to make assumptions that compromised model accuracy. First, the lack of repeat lidar surveys required that we assume constant vegetation over time. We also assume that soil and vegetation properties are constant within broad categories and concur with average parameters identified by the model.
+
+## Climate Velocity
+
+Climate velocity is calculated as the temporal rate of climate change divided by the spatial rate of climate change [@burrowsPaceShiftingClimate2011; @loarieVelocityClimateChange2009] ((dC/dt) / (dC/dx) = dx/dt). We calculated two-dimensional climate velocities for average daily maximum temperatures (℃) at three spatial scales: macro (\~1 km resolution), topo (100 m resolution), and micro (20 m resolution and 2 m above the ground; which we refer to as land surface velocity). Additionally, we calculated three-dimensional microclimate velocities at a 20 m × 20 m × 5 m resolution. Calculations were conducted in the R programming language [@rcoreteamLanguageEnvironmentStatistical2021], adapting code from García Molinos et al. [@garciamolinosVoCCPackageCalculating2019] (Supplementary material). We calculated the temporal rate of climate change as the slope of temperature change between 1960 and 2015. The spatial rate of climate change represents the average temperature change in ℃/m between neighboring grid cells. For each grid cell, the spatial rate in 2D is defined based on a 3 x 3 grid around the central cell. For each pair of adjacent cells in the grid, the temperature differences are calculated and divided by the distance between cell centers. Differences between cells that neighbor each other to the west or east were averaged to produce the x dimension of the spatial gradient, and differences between cells that neighbor each other to the north or south were averaged to produce the y dimension of the spatial gradient. When calculating averages, differences that did not include the focal cell were weighted by 1/$\sqrt{2}$ . The 2D spatial rate for each grid cell, *i*, is then calculated as $spatial rate_{i} = \sqrt{x_{i}^2 + y_{i}^2}$ .
+
+To calculate the 3D spatial rate of climate change, we took a similar approach, but made calculations based on adjacent voxels in a 3 x 3 x 3 cube (i.e., the central voxel and the 6 voxels that share a surface with the central one in the cube). We similarly calculated mean temperature differences in the x and y dimensions, but additionally calculated the differences between the central voxel and the voxel below it and the central voxel and the voxel above it. Vertical differences were divided by the height of each voxel (5 m) to obtain the ℃/m that temperature changes vertically. These vertical differences were averaged to produce the z dimension of the spatial rate of climate change. The 3D spatial rate of climate change for each voxel, *i*, is then calculated as $spatial rate_{i} = \sqrt{x_{i}^2 + y_{i}^2 + z_{i}^2}$. For 2D and 3D calculations, we applied an elevational correction to account for the increase in distance that must be traveled if moving parallel to a slope.
+
+To calculate climate velocity (m/yr), we divided the temporal rate of climate change by the spatial rate of climate change. For 3D velocities, we only considered vectors that fell within the canopy, which we defined as falling between 50% and 100% of the relative height of the forest (where relative height is calculated as height of the climate velocity vector divided by canopy height). Velocities are positive when temperature is increasing and negative when temperatures are decreasing. We took the absolute value of climate velocity to represent the speed at which the range of a species must shift to keep pace with climate change. Additionally, we excluded vectors for microclimate and topoclimate velocities that exceeded the 95th quantile. These high values occur when the spatial rate of climate change is extremely small and do not accurately represent projected range shifts, particularly when temporal rates of climate change are relatively small. To explore how climate velocity changes with elevation and vegetation density, we averaged velocity values in 50 m increments across elevations and 1 unit increments across values of plant area index (PAI).
+
+The direction of climate velocity is the direction of the 2D or 3D vector describing the spatial rate of climate change. We calculated the direction of climate velocity in the latitude/longitude plane as the angle from north (i.e., 0$^\circ$ = north, 180$^\circ$ = south). For 3D velocities, we calculated the vertical angle of movement from horizontal (where horizontal is parallel to the ground). The vertical angle ranges from -90$^\circ$ to 90$^\circ$, where -90° indicates that the velocity vector is pointed directly toward the ground with no horizontal movement, and 90° indicates the velocity vector is pointed directly up with no horizontal movement.
+
+To determine whether climate velocities were directed upslope, we calculated the angular difference between the direction opposite to the aspect and the direction of climate velocity. To determine whether climate velocities were directed toward denser vegetation, we calculated the average direction of denser vegetation using the same method that we used to calculate the spatial rate of climate velocity. We then took the angular difference between the average direction of denser vegetation and the direction of climate velocity. We plotted angular differences using proportional histograms to show the proportion of grid cells where climate velocity is directed toward higher elevations or denser vegetation. An angular difference of 0$^\circ$ indicates climate velocities are directed upslope or toward denser vegetation and a difference of 180$^\circ$ indicates that climate velocities are directed downslope or toward sparser vegetation. Finally, we calculated the circular correlation between the direction of climate velocity and the direction of higher elevation or denser vegetation[@jammalamadakaCorrelationCoefficientAngular; @tsagrisDirectionalCollectionFunctions2024].
+
+\newpage
+
+# Tables
+```{r tab.id = "vocc-summ-tbl", tab.cap = "Climate velocity (m/yr) summarized across the Northern Range of Trinidad. Scales correspond to ~1 km (macro), 100 m (topo), 20 m (2D land surface), 20 x 20 x 5 m (3D within canopy)"}
+vocc.tbl = round(vocc.summ,2)
+colnames(vocc.tbl) = c("Median Velocity", "Maximum Velocity", "Minimum Velocity")
+vocc.tbl = vocc.tbl %>% rownames_to_column(var = "Scale")
+vocc.tbl[3,1] = "2D land surface"
+vocc.tbl[4,1] = "3D within-canopy"
+
+
+vocc.tbl = flextable(vocc.tbl)
+vocc.tbl
+```
+
+\newpage
+
+# Figures
+
+```{r fig.id = "concept-fig", fig.cap="Four spatial scales of temperature maps were used to estimate climate velocity. Macroclimates represent ambient air conditions at ~1 km resolution and were acquired from CHELSA climate data. Topoclimates represent ambient air conditions at a 100 m resolution and were mechanistically modeled accounting for the impact of topography on climate. Microclimates were mechanistically modeled at a 20 m resolution accounting for impacts of topography and vegetation on climate. 2D land-surface microclimates represent climatic conditions at 2 m above the ground. 3D within-canopy microclimates represent climatic conditions at 5 m intervals from the ground to the top of the canopy. Climate velocity is represented by the red arrows. The length of the arrow represents the speed of climate velocity. For 2D climate velocities, the angle of the arrow from north (θ) represents the direction of climate velocity. For 3D microclimate velocities, the angle of the arrow from north represents the horizontal direction of velocity and the angle of the arrow from horizontal represents the vertical direction of velocity.", fig.height=202.5, fig.width=170}
+knitr::include_graphics("scripts/04_plot_code/concept_fig/concept_fig.png")
+```
+
+
+```{r fig.id = "vocc-fig", fig.cap="(A-B) Elevation and plant area index (PAI) in the Northern Range of Trinidad. (C) Climate velocities at each spatial scale (n~macro~ = 1587, n~topo~ = 5000, n~land~ ~surface~ = 5000, n~within~ ~canopy~ = 5000). The y-axis is zoomed in to only show climate velocities between 0 and 100 m/yr so that differences between scales are visible. (D-G) Maps of climate velocity at different spatial scales in forests of the Northern Range (all non-forested pixels were removed): macro (~1 km resolution), topo (100 m resolution), land surface microclimate (20 m resolution), within-canopy microclimate (20 m horizontal x 5 m vertical resolution). The land surface map represents climate velocity at 2 m above the ground and the within-canopy map represents 3D climate velocity in the canopy (i.e., average per grid cell of velocity vectors in the top half of the forest as measured from the ground to the top of the canopy). Color scales were derived from dividing the data into 19 quantiles. Topoclimate and microclimate velocity maps exclude velocities that exceed the top 95th quantile, as these measures are unrealistically large and occur as a result of dividing the temporal rate of climate change by very small spatial rates of climate change.", fig.height=113, fig.width=170}
+knitr::include_graphics("scripts/03_analysis/00_plots/vocc_speed/compareScales_map.png")
+```
+
+```{r fig.id="vocc-elev-pai-scatter", fig.cap="Climate velocity in forested environments in relation to elevation and plant area index (PAI) across spatial scales: macro (~1 km resolution), topo (100 m resolution), land surface microclimate (20 m resolution), within-canopy microclimate (20 m horizontal x 5 m vertical resolution). The land surface map represents climate velocity at 2 m above the ground and the within-canopy map represents 3D climate velocity in the canopy (i.e., average per grid cell of velocity vectors in the top half of the forest as measured from the ground to the top of the canopy). Black lines represent the mean ± SD of climate velocity at 50 m intervals of elevation and 1 unit intervals of PAI. A maximum of 10,000 randomly selected points were plotted for each scale. Spearman correlation coefficients (ρ) are listed in the upper left corner of the plots.", fig.height = 106, fig.width = 170}
+knitr::include_graphics("scripts/03_analysis/00_plots/vocc_speed/compareScales_vocc_elev_pai_scatter.png")
+```
+
+
+```{r fig.id = "vocc-dir", fig.cap="Proportional histogram of the angular difference between the direction of climate velocity and A) the direction a species would need to move to reach a higher elevation and B) the direction a species would need to move to reach denser vegetation. Proportion of grid cells is represented by the y-axis. An angular difference of zero indicates that the direction of climate velocity is pointed toward a higher elevation (i.e., upslope) or toward denser vegetation. An angular difference of 180 indicates that the direction of climate velocity is pointed downslope or away from denser vegetation. Land surface velocities are 2 m above the ground and within-canopy velocities are 3D velocities in the top half of the forest structure measured from the ground to the canopy.", fig.width=170, fig.height=106}
+knitr::include_graphics("scripts/03_analysis/00_plots/vocc_direction/vocc_direction_compare2_annotated.png")
+```
+
+
+```{r fig.id = "vocc-dir2", fig.cap = "The direction of climate velocity relative to elevation (A-E) and plant area index (PAI) (F-J) across scales: macroclimate, topoclimate, land surface microclimate, and 3D within canopy microclimate. Red rectangles in A and B show extent of zoomed in areas for macro scale elevation and PAI, respectively. Blue rectangles show extent of zoomed in areas for topo, land surface, and within canopy scales. (K) The vertical angle represents the angular direction from horizontal in which within-canopy 3D vectors are pointing. -90 indicates that vectors are pointed directly downward and 90 indicates that vectors are pointed directly upward.", fig.width=170, fig.height=122}
+knitr::include_graphics("scripts/03_analysis/00_plots/vocc_direction/direction_compare/direction_compare.png")
+```
+
+\newpage
+
+# References
+
+::: {#refs custom-style="Bibliography"}
+:::
+
+\newpage
+
+# Acknowledgements
+
+LGS was supported by the W. Thomas Smith Scholarship from Davidson College.
+
+\newpage
+
+# Extended Data Figures
+
+```{r fig.id = "tempgrad-map", fig.cap.pre = "Extended Data Fig. ", fig.autonum.start_at = 1, fig.lp = "supp-fig", fig.cap="Maps of the temporal rate of climate change (mean maximum monthly temperature) in forested land use types at different spatial scales: macro (~1 km), topo (100 m), land surface microclimate (20 m), within-canopy microclimate (20 m horizontal x 5 m vertical). The land surface microclimate map represents the spatial rate at 2m above the ground and the within-canopy microclimate map represents the average spatial rate in the canopy (i.e., the upper half of the forest as measured from the ground to the top of the canopy). Color bars represent 19 quantiles. Positive values indicate warming and negative values indicate cooling, which was only present at micro scales. Note different color scales for each spatial scale.", fig.width=170, fig.height=57}
+knitr::include_graphics("scripts/03_analysis/00_plots/vocc_speed/compareScales_map_tempgrad.png")
+```
+
+```{r fig.id = "spatgrad-map", fig.cap.pre = "Extended Data Fig. ", fig.lp = "supp-fig", fig.cap="Maps of the spatial rate of climate change (mean maximum monthly temperature) in forested land use types at different spatial scales: macro (~1 km), topo (100 m), land surface microclimate (20 m), within-canopy microclimate (20 m horizontal x 5 m vertical). The land surface microclimate map represents the spatial rate at 2m above the ground and the within-canopy microclimate map represents the average spatial rate in the canopy (i.e., the upper half of the forest as measured from the ground to the top of the canopy). Topoclimate and microclimate velocity maps exclude velocities that exceed the top 95th quantile, as these measures are unrealistically large and occur as a result of dividing the temporal rate of climate change by very small spatial rates of climate change. Color bars represent 19 quantiles. Note different color scales for each spatial scale.", fig.width=170, fig.height=57}
+knitr::include_graphics("scripts/03_analysis/00_plots/vocc_speed/compareScales_map_spatgrad.png")
+```
+
+
+```{r fig.id = "speed-plt", fig.cap.pre = "Extended Data Fig. ", fig.lp = "supp-fig", fig.cap = "A) Climate velocity, B) the temporal rate of climate change, and C) the spatial rate of climate change for average maximum daily temperature between 1960 and 2015 at four spatial scales. Macro = ~1 km resolution, topo = 100 m resolution, land surface = 20 m resolution, within-canopy = 20m horizontal resolution x 5m vertical resolution. Two-dimensional microclimate velocity represents climate velocity at 2m above the ground. Panel A is zoomed in to only show climate velocities between 0 and 100 m/yr so that differences between scales are visible. However, maximum climate velocities exceeded 100 m/yr for all scales except micro3D.",fig.width=170, fig.height=57}
+# sourced from voccSpeed.R
+knitr::include_graphics("scripts/03_analysis/00_plots/vocc_speed/compareScales.png")
+```
+
+```{r fig.id = "tmaxSD-pai", fig.cap.pre = "Extended Data Fig. ", fig.lp = "supp-fig", fig.cap="Relationship between PAI and the standard deviation of maximum temperature within the 3x3 grid of cells surrounding the focal cell at microclimate scale (20 m) and 2 m above the ground. (n = 5000)", fig.height=70, fig.width=70}
+knitr::include_graphics("scripts/03_analysis/00_plots/supplemental_figs/tmax_pai.png")
+```
+
+```{r fig.id="vocc-elev-pai", fig.cap.pre = "Extended Data Fig. ", fig.lp = "supp-fig", fig.cap="Average climate velocity within intervals of elevation and plant area index (PAI). Macro (~1 km resolution), topo (100 m resolution), land surface microclimate (20 m resolution), within-canopy microclimate (20 m horizontal x 5 m vertical resolution). The land surface microclimate plot represents climate velocity at 2 m above the ground and the within-canopy microclimate plot represents 3D climate velocity in the canopy (i.e., average velocity in the canopy as measured as the top half of the forest from the ground to the top of the canopy). Color scales were derived from dividing the data into 19 quantiles. Averages for topoclimate and microclimate velocity maps exclude velocities that exceed the top 95th quantile.", fig.height = 113, fig.width = 141}
+knitr::include_graphics("scripts/03_analysis/00_plots/vocc_speed/compareScales_vocc_temp_pai1.png")
+```
+
+```{r fig.id = "temp-pai", fig.cap.pre = "Extended Data Fig. ", fig.lp = "supp-fig", fig.cap="Relationship between PAI and average daily maximum temperature at microclimate scale (20 m) and 2 m above the ground. (n = 5000)", fig.height=70, fig.width=70}
+knitr::include_graphics("scripts/03_analysis/00_plots/supplemental_figs/temp_pai_micro.png")
+```
+
+
+```{r fig.id = "elev-pai", fig.cap.pre = "Extended Data Fig. ", fig.lp = "supp-fig", fig.cap="Relationship between elevation and PAI at macro (~1 km), topo (100 m), and micro (20 m)  scales (macro: n = 1503; topo: n = 5000; micro: n = 5000).", fig.height=57, fig.width=170}
+knitr::include_graphics("scripts/03_analysis/00_plots/supplemental_figs/elev_pai.png")
+```
+
+
+```{r fig.id = "3d-interactive", fig.cap.pre = "Extended Data Fig. ", fig.lp = "supp-fig", fig.cap="3D within-canopy velocities in a small area in the Northern Range of Trinidad. The z-axis represents the height above the ground. The size and color of the cones are proportional to the speed of climate velocity. The direction of the cones represent the direction of climate velocity."}
+link = hyperlink_ftext(href = "https://lysoifer.github.io/microclim_velocity/03_analysis/00_plots/vocc3d_interactive.html",
+               text = "https://lysoifer.github.io/microclim_velocity/03_analysis/00_plots/vocc3d_interactive.html")
+link
+```
+
+3D within-canopy velocities in a small area in the Northern Range of Trinidad. The z-axis represents the height above the ground. The size and color of the cones are proportional to the speed of climate velocity. The direction of the cones represents the direction of climate velocity.
