@@ -108,6 +108,7 @@ pai.tp.macro = terra::mask(pai.tp.macro, pai.macro[[1]])
 pai.dir.macro = gVocc_micro2D(pai.tp.macro, pai.sp.macro)
 
 # angle from focal in which PAI is densest (i.e. spatial gradient angle calculated using PAI)
+# this is slightly different from the pai direction for CHELSA because chelsa is a slighlty less than 1 km resolution
 writeRaster(pai.dir.macro[[1]][['xyAng']], 'scripts/03_analysis/02_voccAngles/pai_direction_macro_aggregated.tif')
 
 # check out correlation between pai.macro and macro temp

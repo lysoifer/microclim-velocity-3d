@@ -38,6 +38,12 @@ maxtemp.pres.meso = rast('data/microclima_100m/present/tmax.tif')
 maxtemp.pres.macro = rast('data/chelsa/tasmax2015_meanMonthly.tif')
 maxtemp.pres.macro = project(maxtemp.pres.macro, 'epsg:2067')
 
+micro.paidir = rast("scripts/03_analysis/02_voccAngles/pai_direction_micro.tif")
+micro.paidir = extend(micro.paidir, 1)
+meso.paidir = rast("scripts/03_analysis/02_voccAngles/pai_direction_meso.tif")
+micro2d.1km.paidir = rast("scripts/03_analysis/02_voccAngles/pai_direction_macro_aggregated.tif")
+
+
 # combine into raster for each scale
 
 # add micro3d (20m)
@@ -47,16 +53,22 @@ colnames(landuse.micro.df)[3] = "landuse"
 landuse.micro.df = left_join(landuse.micro.df, landuse.class, by = c("landuse" = "Value"))
 pai.micro.df = as.data.frame(pai.micro, xy = T)
 names(pai.micro.df) = c("x", "y", "pai")
+micro.paidir.df = as.data.frame(micro.paidir, xy = T) # direction of denser vegetation
+names(micro.paidir.df)[3] = "paidir"
+
 micro3d = micro3d %>% 
   left_join(landuse.micro.df, by = c("x", "y")) %>% 
   left_join(pai.micro.df, by = c("x", "y")) %>% 
+  left_join(micro.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
+
 micro3d = micro3d[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
 micro3d = micro3d[!is.na(vocc), ]
 micro3d = micro3d %>% filter(LU_level_1 == "Forest including forest/shrub land")
 
 micro3d = micro3d %>% 
-  dplyr::select(x, y, height, chm, relhgt, vocc, spatgrad, tempgrad, xyAng, EWdir, NSdir, zAng, elev, aspect, pai, landuse, max_temp_pres, LU_level_1, var, resolution) %>% 
+  dplyr::select(x, y, height, chm, relhgt, vocc, spatgrad, tempgrad, xyAng, EWdir, NSdir, zAng, elev,
+                aspect, pai, paidir, landuse, max_temp_pres, LU_level_1, var, resolution) %>% 
   rename(maxtemp.pres = max_temp_pres) 
 micro3d = micro3d %>% 
   mutate(maxtemp.pres = maxtemp.pres/100)
@@ -72,9 +84,12 @@ colnames(landuse.meso.df)[3] = "landuse"
 landuse.meso.df = left_join(landuse.meso.df, landuse.class, by = c("landuse" = "Value"))
 pai.meso.df = as.data.frame(pai.meso, xy = T)
 names(pai.meso.df) = c("x", "y", "pai")
+meso.paidir.df = as.data.frame(meso.paidir, xy = T)
+names(meso.paidir.df)[3] = "paidir" # direction of denser vegetation
 micro3d_100m = micro3d_100m %>% 
   left_join(landuse.meso.df, by = c("x", "y")) %>% 
   left_join(pai.meso.df, by = c("x", "y")) %>% 
+  left_join(meso.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
 micro3d_100m = micro3d_100m[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
 micro3d_100m = micro3d_100m[!is.na(vocc), ]
@@ -82,7 +97,7 @@ micro3d_100m = micro3d_100m %>% filter(LU_level_1 == "Forest including forest/sh
 
 micro3d_100m = micro3d_100m %>% 
   dplyr::select(x, y, height, chm, relhgt, vocc, spatgrad, tempgrad, xyAng, 
-                EWdir, NSdir, zAng, elev, aspect, pai, landuse, max_temp_pres,
+                EWdir, NSdir, zAng, elev, aspect, pai, paidir, landuse, max_temp_pres,
                 LU_level_1, var, resolution) %>% 
   rename(maxtemp.pres = max_temp_pres) 
 
@@ -102,9 +117,12 @@ landuse.macro.df = left_join(landuse.macro.df, landuse.class, by = c("landuse" =
 pai.macro = resample(pai.micro, micro3d_1km_rast)
 pai.macro.df = as.data.frame(pai.macro, xy = T)
 names(pai.macro.df) = c("x", "y", "pai")
+micro2d.1km.paidir.df = as.data.frame(micro2d.1km.paidir, xy = T)
+names(micro2d.1km.paidir.df)[3] = "paidir"
 micro3d_1km = micro3d_1km %>% 
   left_join(landuse.macro.df, by = c("x", "y")) %>% 
   left_join(pai.macro.df, by = c("x", "y")) %>% 
+  left_join(micro2d.1km.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
 micro3d_1km = micro3d_1km[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
 micro3d_1km = micro3d_1km[!is.na(vocc), ]
@@ -112,7 +130,7 @@ micro3d_1km = micro3d_1km %>% filter(LU_level_1 == "Forest including forest/shru
 
 micro3d_1km = micro3d_1km %>% 
   dplyr::select(x, y, height, chm, relhgt, vocc, spatgrad, tempgrad, xyAng, 
-                EWdir, NSdir, zAng, elev, aspect, pai, landuse, max_temp_pres,
+                EWdir, NSdir, zAng, elev, aspect, pai, paidir, landuse, max_temp_pres,
                 LU_level_1, var, resolution) %>% 
   rename(maxtemp.pres = max_temp_pres) 
 
@@ -166,9 +184,13 @@ colnames(landuse.micro.df)[3] = "landuse"
 landuse.micro.df = left_join(landuse.micro.df, landuse.class, by = c("landuse" = "Value"))
 pai.micro.df = as.data.frame(pai.micro, xy = T)
 names(pai.micro.df) = c("x", "y", "pai")
+micro.paidir.df = as.data.frame(micro.paidir, xy = T) # direction of denser vegetation
+names(micro.paidir.df)[3] = "paidir"
+
 micro3d = micro3d %>% 
   left_join(landuse.micro.df, by = c("x", "y")) %>% 
   left_join(pai.micro.df, by = c("x", "y")) %>% 
+  left_join(micro.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
 micro3d = micro3d[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
 micro3d = micro3d[!is.na(vocc), ]
@@ -176,7 +198,7 @@ micro3d = micro3d %>% filter(LU_level_1 == "Forest including forest/shrub land")
 
 micro3d = micro3d %>% 
   dplyr::select(x, y, height, chm, relhgt, vocc, spatgrad, tempgrad, xyAng, 
-                EWdir, NSdir, zAng, elev, aspect, pai, landuse, min_temp_pres,
+                EWdir, NSdir, zAng, elev, aspect, pai, paidir, landuse, min_temp_pres,
                 LU_level_1, var, resolution) %>% 
   rename(mintemp.pres = min_temp_pres) 
 micro3d = micro3d %>% 
@@ -194,9 +216,13 @@ colnames(landuse.meso.df)[3] = "landuse"
 landuse.meso.df = left_join(landuse.meso.df, landuse.class, by = c("landuse" = "Value"))
 pai.meso.df = as.data.frame(pai.meso, xy = T)
 names(pai.meso.df) = c("x", "y", "pai")
+meso.paidir.df = as.data.frame(meso.paidir, xy = T)
+names(meso.paidir.df)[3] = "paidir" # direction of denser vegetation
+
 micro3d_100m = micro3d_100m %>% 
   left_join(landuse.meso.df, by = c("x", "y")) %>% 
   left_join(pai.meso.df, by = c("x", "y")) %>% 
+  left_join(meso.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
 micro3d_100m = micro3d_100m[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
 micro3d_100m = micro3d_100m[!is.na(vocc), ]
@@ -204,7 +230,7 @@ micro3d_100m = micro3d_100m %>% filter(LU_level_1 == "Forest including forest/sh
 
 micro3d_100m = micro3d_100m %>% 
   dplyr::select(x, y, height, chm, relhgt, vocc, spatgrad, tempgrad, xyAng, 
-                EWdir, NSdir, zAng, elev, aspect, pai, landuse, min_temp_pres, 
+                EWdir, NSdir, zAng, elev, aspect, pai, paidir, landuse, min_temp_pres, 
                 LU_level_1, var, resolution) %>% 
   rename(mintemp.pres = min_temp_pres) 
 
@@ -224,9 +250,13 @@ landuse.macro.df = left_join(landuse.macro.df, landuse.class, by = c("landuse" =
 pai.macro = resample(pai.micro, micro3d_1km_rast)
 pai.macro.df = as.data.frame(pai.macro, xy = T)
 names(pai.macro.df) = c("x", "y", "pai")
+micro2d.1km.paidir.df = as.data.frame(micro2d.1km.paidir, xy = T)
+names(micro2d.1km.paidir.df)[3] = "paidir"
+
 micro3d_1km = micro3d_1km %>% 
   left_join(landuse.macro.df, by = c("x", "y")) %>% 
   left_join(pai.macro.df, by = c("x", "y")) %>% 
+  left_join(micro2d.1km.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
 micro3d_1km = micro3d_1km[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
 micro3d_1km = micro3d_1km[!is.na(vocc), ]
@@ -234,7 +264,7 @@ micro3d_1km = micro3d_1km %>% filter(LU_level_1 == "Forest including forest/shru
 
 micro3d_1km = micro3d_1km %>% 
   dplyr::select(x, y, height, chm, relhgt, vocc, spatgrad, tempgrad, xyAng,
-                EWdir, NSdir, zAng, elev, aspect, pai, landuse, min_temp_pres,
+                EWdir, NSdir, zAng, elev, aspect, pai, paidir, landuse, min_temp_pres,
                 LU_level_1, var, resolution) %>% 
   rename(mintemp.pres = min_temp_pres) 
 
