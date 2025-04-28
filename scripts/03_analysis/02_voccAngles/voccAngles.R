@@ -307,21 +307,6 @@ pai.angdif.summ = df %>%
 
 # z angle -----------------------------------------------------------------
 
-# maxtemp.3d = fread("scripts/03_analysis/00_dataframes/analysis_dataframe_3d_full_maxtemp.csv")
-# mintemp.3d = fread("scripts/03_analysis/00_dataframes/analysis_dataframe_3d_full_mintemp.csv")
-# 
-# maxtemp.3d$var = "maxtemp"
-# mintemp.3d$var = "mintemp"
-# 
-# maxtemp.3d = maxtemp.3d %>% rename(temp.pres = maxtemp.pres)
-# mintemp.3d = mintemp.3d %>% rename(temp.pres = mintemp.pres)
-
-
-# df.3d = rbind(maxtemp.3d, mintemp.3d) %>% 
-#   mutate(xy_length = abs(cos(zAng*pi/180)), 
-#          z_length = abs(sin(zAng*pi/180)),
-#          xyz_ratio = z_length/xy_length,
-#          resolution = factor(resolution, levels = c("1km", "100m", "20m")))
 
 df.3d = df %>% 
   filter(scale == "Within-canopy")
@@ -337,126 +322,19 @@ df3d.summ = df.3d %>%
           perc_down_vect = sum(zAng < 1)/n*100) # percentage of downward pointing vectors (zAng < 0)
 
 
-# maxtemp.3d = maxtemp.3d %>% 
-#   group_by(resolution) %>%
-#   mutate(xy_length = abs(cos(zAng*pi/180)), 
-#          z_length = abs(sin(zAng*pi/180)),
-#          xyz_ratio = z_length/xy_length)
-# maxtemp3d.summ = maxtemp.3d %>% reframe(n = n(),
-#           perc_down_vect = sum(zAng < 1)/n*100) # percentage of downward pointing vectors (zAng < 0)
-# 
-# mintemp.3d = mintemp.3d %>% 
-#   group_by(resolution) %>%
-#   mutate(xy_length = abs(cos(zAng*pi/180)), 
-#          z_length = abs(sin(zAng*pi/180)),
-#          xyz_ratio = z_length/xy_length)
-# 
-# mintemp3d.summ = mintemp.3d %>% reframe(n = n(),
-#           perc_down_vect = sum(zAng < 1)/n*100)
 
-
-ggplot(df.3d, aes(x = log(xyz_ratio), y = relhgt)) +
-  geom_point(pch = ".", alpha = 0.5) +
-  #coord_cartesian(xlim = c(10, 10)) +
-  geom_vline(xintercept = 0, color = "red", linetype = "dashed", linewidth = 1) +
-  scale_x_continuous("ln(vertical length/horizontal length)") +
-  scale_y_continuous("Relative canopy height") +
-  facet_grid(cols = vars(resolution), rows = vars(var)) +
-  theme_classic()
-
-ggsave("scripts/03_analysis/00_plots/supplemental_figs/vert_to_horiz_ratio.png", width = 7, height = 4)
-
-# ggplot(maxtemp.3d %>% slice_sample(n=5000), aes(x = log(xyz_ratio), y = relhgt)) +
-#   geom_point(size = 1, alpha = 0.5) +
+# Takes a long time to plot
+# ggplot(df.3d, aes(x = log(xyz_ratio), y = relhgt)) +
+#   geom_point(pch = ".", alpha = 0.5) +
 #   #coord_cartesian(xlim = c(10, 10)) +
 #   geom_vline(xintercept = 0, color = "red", linetype = "dashed", linewidth = 1) +
 #   scale_x_continuous("ln(vertical length/horizontal length)") +
 #   scale_y_continuous("Relative canopy height") +
-#   facet_wrap(~resolution) +
+#   facet_grid(cols = vars(resolution), rows = vars(var)) +
 #   theme_classic()
 # 
-# ggsave("scripts/03_analysis/00_plots/supplemental_figs/vert_to_horiz_ratio.png", width = 4, height = 4)
-# 
+# ggsave("scripts/03_analysis/00_plots/supplemental_figs/vert_to_horiz_ratio.png", width = 7, height = 4)
 
-# micro3d = fread("scripts/03_analysis/00_dataframes/micro3d_canopy_dataframe_tmax_20m.csv")
-
-# z.df = micro3d %>%
-#   mutate(xy_length = abs(cos(zAng*pi/180)), 
-#          z_length = abs(sin(zAng*pi/180)),
-#          xyz_ratio = z_length/xy_length) # anything greater than one means z movement is longer than xy movement
-# 
-# down_vectors = sum(z.df$zAng < 0)/nrow(z.df)
-# 
-# z.df.down = z.df %>% 
-#   filter(zAng < 0)
-# 
-# vh_ratio = sum(abs(z.df$xyz_ratio)>1)/nrow(z.df)
-
-# of downward facing vectors, what proportion have vertical movement greater than horizontal movement
-# tmax.vh_ratio.down = sum(abs(z.df.down$xyz_ratio)>1)/nrow(z.df.down)
-
-
-# z.df %>% dplyr::filter(log(xyz_ratio) < -20)
-
-
-# micro3d.100m
-
-# micro3d.100m = fread("scripts/03_analysis/00_dataframes/micro3d_canopy_dataframe_tmax_100m.csv")
-# 
-# z.df = micro3d.100m %>%
-#   mutate(xy_length = abs(cos(zAng*pi/180)), 
-#          z_length = abs(sin(zAng*pi/180)),
-#          xyz_ratio = z_length/xy_length) # anything greater than one means z movement is longer than xy movement
-# 
-# down_vectors = sum(z.df$zAng < 0)/nrow(z.df)
-# 
-# z.df.down = z.df %>% 
-#   filter(zAng < 0)
-# 
-# vh_ratio = sum(abs(z.df$xyz_ratio)>1)/nrow(z.df)
-# 
-# # of downward facing vectors, what proportion have vertical movement greater than horizontal movement
-# tmax100m.vh_ratio.down = sum(abs(z.df.down$xyz_ratio)>1)/nrow(z.df.down)
-# 
-# ggplot(z.df %>% slice_sample(n=5000), aes(x = log(xyz_ratio), y = relhgt)) +
-#   geom_point(size = 1, alpha = 0.5) +
-#   #coord_cartesian(xlim = c(10, 10)) +
-#   geom_vline(xintercept = 0, color = "red", linetype = "dashed", linewidth = 1) +
-#   scale_x_continuous("ln(vertical length/horizontal length)") +
-#   scale_y_continuous("Relative canopy height") +
-#   theme_classic()
-# 
-# ggsave("scripts/03_analysis/00_plots/supplemental_figs/vert_to_horiz_ratio_100m.png", width = 4, height = 4)
-# 
-# 
-# # micro3d 1km
-# 
-# micro3d.1km = fread("scripts/03_analysis/00_dataframes/micro3d_canopy_dataframe_tmax_1km.csv")
-# 
-# z.df = micro3d.1km %>%
-#   mutate(xy_length = abs(cos(zAng*pi/180)), 
-#          z_length = abs(sin(zAng*pi/180)),
-#          xyz_ratio = z_length/xy_length) # anything greater than one means z movement is longer than xy movement
-# 
-# down_vectors = sum(z.df$zAng < 0)/nrow(z.df)
-# 
-# z.df.down = z.df %>% 
-#   filter(zAng < 0)
-# 
-# vh_ratio = sum(abs(z.df$xyz_ratio)>1)/nrow(z.df)
-# 
-# # of downward facing vectors, what proportion have vertical movement greater than horizontal movement
-# tmax1km.vh_ratio.down = sum(abs(z.df.down$xyz_ratio)>1)/nrow(z.df.down)
-# 
-# ggplot(z.df %>% slice_sample(n=5000), aes(x = log(xyz_ratio), y = relhgt)) +
-#   geom_point(size = 1, alpha = 0.5) +
-#   #coord_cartesian(xlim = c(10, 10)) +
-#   geom_vline(xintercept = 0, color = "red", linetype = "dashed", linewidth = 1) +
-#   scale_x_continuous("ln(vertical length/horizontal length)") +
-#   scale_y_continuous("Relative canopy height") +
-#   theme_classic()
-# 
-# ggsave("scripts/03_analysis/00_plots/supplemental_figs/vert_to_horiz_ratio_1km.png", width = 4, height = 4)
 
 # vertical space ----------------------------------------------------------
 # how long does it take to run out of vertical space
