@@ -5,18 +5,22 @@ library(data.table)
 library(tidyterra)
 library(viridis)
 
-tmax = fread("scripts/03_analysis/00_dataframes/analysis_dataframe_3d_full_maxtemp.csv")
-tmin = fread("scripts/03_analysis/00_dataframes/analysis_dataframe_3d_full_mintemp.csv")
+tmax = fread("data/dataframes/analysis_dataframe_full_maxtemp.csv")
+tmin = fread("data/dataframes/analysis_dataframe_full_mintemp.csv")
+
 
 tmax = tmax %>% 
+  filter(scale == "Within-canopy") %>% 
   mutate(resolution = factor(resolution, levels = c("1km", "100m", "20m"))) %>% 
   rename(temp.pres = maxtemp.pres)
 tmin = tmin %>% 
+  filter(scale == "Within-canopy") %>% 
   mutate(resolution = factor(resolution, levels = c("1km", "100m", "20m"))) %>% 
   rename(temp.pres = mintemp.pres)
 
 df = bind_rows(tmax, tmin)
-df$relhgt_cat = as.numeric(as.character(cut(df$relhgt, breaks = seq(0.5,1,0.05), labels = seq(0.5,0.95,0.05))))
+df$relhgt_cat = as.numeric(as.character(cut(df$relhgt, breaks = seq(0.5,1,0.05),
+                                            labels = seq(0.5,0.95,0.05))))
 
 # only upward directed vectors
 df.up = df %>% filter(zAng > 0)

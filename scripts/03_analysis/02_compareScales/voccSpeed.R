@@ -8,13 +8,13 @@ library(data.table)
 library(RColorBrewer)
 library(ggh4x)
 
-vocc.df = fread("scripts/03_analysis/00_dataframes/analysis_dataframe_full_maxtemp.csv") %>% 
+vocc.df = fread("data/dataframes/analysis_dataframe_full_maxtemp.csv") %>% 
   mutate(scale = case_when(scale == "Land-surface" ~ "Land\nsurface",
                            scale == "Within-canopy" ~ "Within-\ncanopy",
                            .default = scale),
          scale = factor(scale, levels = c("Macro", "Topo", "Land\nsurface", "Within-\ncanopy")))
 
-vocc.tmin = fread("scripts/03_analysis/00_dataframes/analysis_dataframe_full_mintemp.csv") %>% 
+vocc.tmin = fread("data/dataframes/analysis_dataframe_full_mintemp.csv") %>% 
   mutate(scale = case_when(scale == "Land-surface" ~ "Land\nsurface",
                            scale == "Within-canopy" ~ "Within-\ncanopy",
                            .default = scale),

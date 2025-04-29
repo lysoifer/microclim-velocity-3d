@@ -1,0 +1,15 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.nc
+*.png
+*.svg
+*.tif
+data/
+scripts/02_climate_velocity/output/
+Response to reviewer.docx
+Response to reviewer2.docx
+climvocc_manuscript_officedown.docx
+cover letter.docx
+docs/climvocc_manuscript_officedown2_IMD.docx
