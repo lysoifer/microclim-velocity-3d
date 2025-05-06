@@ -9,8 +9,12 @@ library(data.table)
 
 # calculate macroclimate velocity for temp and dry season VPD using Chelsa data between 1960 and 2015
 
-tmax1960 = rast('data/chelsa/tasmax1960_estimate.tif')
-tmax2015 = rast('data/chelsa/tasmax2015_meanMonthly.tif')
+# tmax1960 = rast('data/chelsa/chelsa_1960_estimates/tasmax1960_estimate.tif')
+# tmax2015 = rast('data/chelsa/tasmax2015_meanMonthly.tif')
+
+# max temp warmest month
+tmax1960 = rast('data/chelsa/chelsa_1960_estimates/tasmax1960_bio5_estimate.tif')
+tmax2015 = rast('data/chelsa/tasmax2015_bio5_maxMonthly.tif')
 
 
 tmax1960 = project(tmax1960, 'epsg:2067')
@@ -38,11 +42,16 @@ climvocc = gVocc_micro2D(tempgrad, spatgrad)
 
 plot(climvocc[[1]]$vocc, range = c(1,100))
 
-fname = paste0('scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp')
-writeRaster(tempgrad, filename = paste0(fname, '/tempgrad.tif'), overwrite = T)
-writeRaster(spatgrad[[2]], filename = paste0(fname, '/spatgrad.tif'), overwrite = T)
-writeRaster(climvocc[[1]], filename = paste0(fname, '/vocc.tif'), overwrite = T)
+# fname = paste0('scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp')
+# writeRaster(tempgrad, filename = paste0(fname, '/tempgrad.tif'), overwrite = T)
+# writeRaster(spatgrad[[2]], filename = paste0(fname, '/spatgrad.tif'), overwrite = T)
+# writeRaster(climvocc[[1]], filename = paste0(fname, '/vocc.tif'), overwrite = T)
 
+# bio5 = max of monthly max temps
+fname = paste0('scripts/02_climate_velocity/output/macroclimate/temp_bio5')
+writeRaster(tempgrad, filename = paste0(fname, '/tempgrad.tif'), overwrite = F)
+writeRaster(spatgrad[[2]], filename = paste0(fname, '/spatgrad.tif'), overwrite = F)
+writeRaster(climvocc[[1]], filename = paste0(fname, '/vocc.tif'), overwrite = F)
 
 # TEMP BIO6 VOCC ----------------------------------------------------------
 
