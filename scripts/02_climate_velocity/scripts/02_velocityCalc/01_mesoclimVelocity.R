@@ -31,6 +31,7 @@ climvocc = gVocc_micro2D(tempgrad, spatgrad)
 
 plot(climvocc[[1]]$vocc, range = c(0,1000))
 
+# this is bio5 because microclima saves tmax of the year
 fname = paste0('scripts/02_climate_velocity/output/mesoclimate/avg_daily_max_temp')
 writeRaster(tempgrad, filename = paste0(fname, '/tempgrad.tif'), overwrite = T)
 writeRaster(spatgrad[[2]], filename = paste0(fname, '/spatgrad.tif'), overwrite = T)

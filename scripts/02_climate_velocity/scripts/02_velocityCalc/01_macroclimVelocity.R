@@ -57,9 +57,8 @@ writeRaster(climvocc[[1]], filename = paste0(fname, '/vocc.tif'), overwrite = F)
 
 # calculate macroclimate velocity for temp and dry season VPD using Chelsa data between 1960 and 2015
 
-tmin1960 = rast('data/chelsa/tasmin1960_bio6estimate.tif')
+tmin1960 = rast('data/chelsa/chelsa_1960_estimates/tasmin1960_bio6estimate.tif')
 tmin2015 = rast('data/chelsa/tasmin2015_bio6.tif')
-
 
 tmin1960 = project(tmin1960, 'epsg:2067')
 tmin2015 = project(tmin2015, 'epsg:2067')
