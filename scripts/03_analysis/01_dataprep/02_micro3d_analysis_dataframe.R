@@ -6,7 +6,8 @@ library(numform)
 library(data.table)
 
 # vocc
-micro.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/", pattern = "vocc", full.names = T)
+# micro.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/", pattern = "vocc", full.names = T)
+micro.3d = list.files(path = "scripts/02_climate_velocity/output/3D/temp_bio5/", pattern = "vocc", full.names = T)
 micro.3d = grep(".tif", micro.3d, value = T)
 micro.3d = lapply(micro.3d, rast)
 
@@ -52,7 +53,8 @@ xyAng.3d = as.data.frame(xyAng.3d, xy = T) %>%
   drop_na()
 
 # spatgrad.3d
-spatgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/", pattern = "spat", full.names = T)
+# spatgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/", pattern = "spat", full.names = T)
+spatgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/temp_bio5/", pattern = "spat", full.names = T)
 spatgrad.3d = lapply(spatgrad.3d, rast)
 spatgrad.3d = lapply(spatgrad.3d, "[[", 1)
 spatgrad.3d = rast(spatgrad.3d)
@@ -63,7 +65,8 @@ spatgrad.3d = as.data.frame(spatgrad.3d, xy = T) %>%
   drop_na()
 
 # tempgrad.3d
-tempgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/", pattern = "temp", full.names = T)
+# tempgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/", pattern = "temp", full.names = T)
+tempgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/temp_bio5/", pattern = "temp", full.names = T)
 tempgrad.3d = lapply(tempgrad.3d, rast)
 tempgrad.3d = rast(tempgrad.3d)
 names(tempgrad.3d) = paste0(f_pad_zero(seq(5,35,5), 2))
@@ -108,13 +111,16 @@ micro3d.df = micro3d.df %>%
   left_join(elev, by = c("x", "y"))
 
 # this dataframe contains data for all velocity vectors that fall within relhgt between 0.5 and 1
-write.csv(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_20m.csv")
+# write.csv(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_20m.csv")
+write.csv(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tempbio5_20m.csv")
 
 
 # add temp to data frame --------------------------------------------------
 
-micro3d.df = fread("scripts/03_analysis/00_dataframes/micro3d_canopy_dataframe_tmax_20m.csv")
-maxtemp.pres.micro = list.files(path = "data/microclim_3D/mosaics/", pattern = "pres", full.names = T)
+# micro3d.df = fread("data/dataframes/micro3d_canopy_dataframe_tmax_20m.csv")
+micro3d.df = fread("data/dataframes/micro3d_canopy_dataframe_tempbio5_20m.csv")
+# maxtemp.pres.micro = list.files(path = "data/microclim_3D/mosaics/", pattern = "pres", full.names = T)
+maxtemp.pres.micro = list.files(path = "data/microclim_3D/mosaics/mosaics_temp_bio5/temp_bio5_20m/pres/", pattern = "pres", full.names = T)
 maxtemp.pres.micro = lapply(maxtemp.pres.micro, rast)
 names(maxtemp.pres.micro) = paste0(f_pad_zero(c(2, seq(5,40,5)), 2))
 maxtemp.pres.micro = rast(maxtemp.pres.micro)
@@ -129,14 +135,16 @@ micro3d.df = micro3d.df %>%
 micro3d.df$var = "maxtemp"
 micro3d.df$resolution = "20m"
 
-fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_20m.csv", row.names = F)
+# fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_20m.csv", row.names = F)
+fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tempbio5_20m.csv", row.names = F)
 
 
 
 # MAX TEMP AGGREGATED TO 100m ---------------------------------------------
 
 # vocc
-micro.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_100m/", pattern = "vocc", full.names = T)
+#micro.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_100m/", pattern = "vocc", full.names = T)
+micro.3d = list.files(path = "scripts/02_climate_velocity/output/3D/temp_bio5/aggregated_100m/", pattern = "vocc", full.names = T)
 micro.3d = grep(".tif", micro.3d, value = T)
 micro.3d = lapply(micro.3d, rast)
 
@@ -182,7 +190,8 @@ xyAng.3d = as.data.frame(xyAng.3d, xy = T) %>%
   drop_na()
 
 # spatgrad.3d
-spatgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_100m/", pattern = "spat", full.names = T)
+#spatgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_100m/", pattern = "spat", full.names = T)
+spatgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/temp_bio5/aggregated_100m/", pattern = "spat", full.names = T)
 spatgrad.3d = lapply(spatgrad.3d, rast)
 spatgrad.3d = lapply(spatgrad.3d, "[[", 1)
 spatgrad.3d = rast(spatgrad.3d)
@@ -193,7 +202,8 @@ spatgrad.3d = as.data.frame(spatgrad.3d, xy = T) %>%
   drop_na()
 
 # tempgrad.3d
-tempgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_100m/", pattern = "temp", full.names = T)
+# tempgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_100m/", pattern = "temp", full.names = T)
+tempgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/temp_bio5/aggregated_100m/", pattern = "temp", full.names = T)
 tempgrad.3d = lapply(tempgrad.3d, rast)
 tempgrad.3d = rast(tempgrad.3d)
 names(tempgrad.3d) = paste0(f_pad_zero(seq(5,35,5), 2))
@@ -243,13 +253,16 @@ micro3d.df$var = "maxtemp"
 micro3d.df$resolution = "100m"
 
 # this dataframe contains data for all velocity vectors that fall within relhgt between 0.5 and 1
-fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_100m.csv", row.names = F)
+# fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_100m.csv", row.names = F)
+fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tempbio5_100m.csv", row.names = F)
 
 
 # add temp to data frame --------------------------------------------------
 
-micro3d.df = fread("scripts/03_analysis/00_dataframes/micro3d_canopy_dataframe_tmax_100m.csv")
-maxtemp.pres.micro = list.files(path = "data/microclim_3D/mosaics/aggregated_100m/", pattern = "pres", full.names = T)
+# micro3d.df = fread("scripts/03_analysis/00_dataframes/micro3d_canopy_dataframe_tmax_100m.csv")
+micro3d.df = fread("data/dataframes/micro3d_canopy_dataframe_tempbio5_100m.csv")
+# maxtemp.pres.micro = list.files(path = "data/microclim_3D/mosaics/aggregated_100m/", pattern = "pres", full.names = T)
+maxtemp.pres.micro = list.files(path = "data/microclim_3D/mosaics/mosaics_temp_bio5/aggregated_100m/pres/", pattern = "pres", full.names = T)
 maxtemp.pres.micro = lapply(maxtemp.pres.micro, rast)
 names(maxtemp.pres.micro) = paste0(f_pad_zero(c(2, seq(5,40,5)), 2))
 maxtemp.pres.micro = rast(maxtemp.pres.micro)
@@ -261,14 +274,16 @@ maxtemp.pres.micro = as.data.frame(maxtemp.pres.micro, xy = T) %>%
 micro3d.df = micro3d.df %>% 
   left_join(maxtemp.pres.micro, by = c("x", "y", "height"))
 
-fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_100m.csv", row.names = F)
+# fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_100m.csv", row.names = F)
+fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tempbio5_100m.csv", row.names = F)
 
 
 
 # MAX TEMP AGGREGATED 1km -------------------------------------------------
 
 # vocc
-micro.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_1km", pattern = "vocc", full.names = T)
+# micro.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_1km", pattern = "vocc", full.names = T)
+micro.3d = list.files(path = "scripts/02_climate_velocity/output/3D/temp_bio5/aggregated_1km", pattern = "vocc", full.names = T)
 micro.3d = grep(".tif", micro.3d, value = T)
 micro.3d = lapply(micro.3d, rast)
 
@@ -314,7 +329,8 @@ xyAng.3d = as.data.frame(xyAng.3d, xy = T) %>%
   drop_na()
 
 # spatgrad.3d
-spatgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_1km/", pattern = "spat", full.names = T)
+# spatgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_1km/", pattern = "spat", full.names = T)
+spatgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/temp_bio5/aggregated_1km/", pattern = "spat", full.names = T)
 spatgrad.3d = lapply(spatgrad.3d, rast)
 spatgrad.3d = lapply(spatgrad.3d, "[[", 1)
 spatgrad.3d = rast(spatgrad.3d)
@@ -325,7 +341,8 @@ spatgrad.3d = as.data.frame(spatgrad.3d, xy = T) %>%
   drop_na()
 
 # tempgrad.3d
-tempgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_1km/", pattern = "temp", full.names = T)
+# tempgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_1km/", pattern = "temp", full.names = T)
+tempgrad.3d = list.files(path = "scripts/02_climate_velocity/output/3D/temp_bio5/aggregated_1km/", pattern = "temp", full.names = T)
 tempgrad.3d = lapply(tempgrad.3d, rast)
 tempgrad.3d = rast(tempgrad.3d)
 names(tempgrad.3d) = paste0(f_pad_zero(seq(5,35,5), 2))
@@ -374,13 +391,16 @@ micro3d.df$var = "maxtemp"
 micro3d.df$resolution = "1km"
 
 # this dataframe contains data for all velocity vectors that fall within relhgt between 0.5 and 1
-fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_1km.csv", row.names = F)
+# fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_1km.csv", row.names = F)
+fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tempbio5_1km.csv", row.names = F)
 
 
 # add temp to data frame --------------------------------------------------
 
-micro3d.df = fread("scripts/03_analysis/00_dataframes/micro3d_canopy_dataframe_tmax_1km.csv")
-maxtemp.pres.micro = list.files(path = "data/microclim_3D/mosaics/aggregated_1km/", pattern = "pres", full.names = T)
+# micro3d.df = fread("scripts/03_analysis/00_dataframes/micro3d_canopy_dataframe_tmax_1km.csv")
+micro3d.df = fread("data/dataframes/micro3d_canopy_dataframe_tempbio5_1km.csv")
+# maxtemp.pres.micro = list.files(path = "data/microclim_3D/mosaics/aggregated_1km/", pattern = "pres", full.names = T)
+maxtemp.pres.micro = list.files(path = "data/microclim_3D/mosaics/mosaics_temp_bio5/aggregated_1km/pres/", pattern = "pres", full.names = T)
 maxtemp.pres.micro = lapply(maxtemp.pres.micro, rast)
 names(maxtemp.pres.micro) = paste0(f_pad_zero(c(2, seq(5,40,5)), 2))
 maxtemp.pres.micro = rast(maxtemp.pres.micro)
@@ -392,7 +412,8 @@ maxtemp.pres.micro = as.data.frame(maxtemp.pres.micro, xy = T) %>%
 micro3d.df = micro3d.df %>% 
   left_join(maxtemp.pres.micro, by = c("x", "y", "height"))
 
-fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_1km.csv", row.names = F)
+# fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tmax_1km.csv", row.names = F)
+fwrite(micro3d.df, "data/dataframes/micro3d_canopy_dataframe_tempbio5_1km.csv", row.names = F)
 
 
 # MIN TEMP COLDEST MONTH (BIO6) -------------------------------------------
