@@ -8,7 +8,8 @@ library(data.table)
 library(RColorBrewer)
 library(ggh4x)
 
-vocc.df = fread("data/dataframes/analysis_dataframe_full_maxtemp.csv") %>% 
+# vocc.df = fread("data/dataframes/analysis_dataframe_full_maxtemp.csv") %>%
+vocc.df = fread("data/dataframes/analysis_dataframe_full_tempbio5.csv") %>%
   mutate(scale = case_when(scale == "Land-surface" ~ "Land\nsurface",
                            scale == "Within-canopy" ~ "Within-\ncanopy",
                            .default = scale),
@@ -89,7 +90,8 @@ vocc.all %>%
         axis.line = element_blank(),
         legend.margin = margin(0,0,0,0))
 
-ggsave("scripts/03_analysis/00_plots/new_figs/fig_02_voccByProximity.png", height = 100, width = 90, units = "mm", dpi = 300)
+# ggsave("scripts/03_analysis/00_plots/new_figs/fig_02_voccByProximity.png", height = 100, width = 90, units = "mm", dpi = 300)
+ggsave("scripts/03_analysis/00_plots/new_figs/fig_02_voccByProximity_bio5.png", height = 100, width = 90, units = "mm", dpi = 300)
 
   
 
@@ -142,4 +144,5 @@ vocc.all %>%
         axis.line = element_blank(),
         legend.margin = margin(0,0,0,0))
 
-ggsave("scripts/03_analysis/00_plots/new_figs/fig_03_voccByResolution.png", height = 100, width = 90, units = "mm", dpi = 300)
+#ggsave("scripts/03_analysis/00_plots/new_figs/fig_03_voccByResolution.png", height = 100, width = 90, units = "mm", dpi = 300)
+ggsave("scripts/03_analysis/00_plots/new_figs/fig_03_voccByResolution_bio5.png", height = 100, width = 90, units = "mm", dpi = 300)

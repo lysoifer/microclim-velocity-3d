@@ -293,12 +293,12 @@ knitr::include_graphics("scripts/04_plot_code/concept_fig/100m_maps/concept_fig2
 ```
 
 ```{r fig.id = "vocc-proximity", fig.cap="Climate velocity (m/yr), the temporal rate of climate change (°C/yr), and the spatial rate of climate change (°C/m) in the Northern Range of Trinidad calculated for free-air, land surface, and within-canopy climate conditions at 1 km and 100 m spatial resolutions. Free-air and land-surface velocities are calculated in two dimensions and within-canopy velocities are calculated in three-dimensions. Boxplots display median and 25th and 75th percentiles, with upper and lower whiskers corresponding to 1.5 times the IQR from the 25th or 75th percentiles.", fig.width=90, fig.height=100}
-knitr::include_graphics("scripts/03_analysis/00_plots/new_figs/fig02_voccByProximity.png")
+knitr::include_graphics("scripts/03_analysis/00_plots/new_figs/fig02_voccByProximity_bio5.png")
 
 ```
 
 ```{r fig.id = "vocc-resolution", fig.cap="Climate velocity (m/yr), the temporal rate of climate change (°C/yr), and the spatial rate of climate change (°C/m) in the Northern Range of Trinidad calculated at 1 km, 100 m, and 20 m spatial resolutions within the forest. Land-surface velocities are calculated in two dimensions at 2 m above the ground and within-canopy velocities are calculated in three-dimensions at 5 m vertical intervals within the upper half of the canopy. Boxplots display median and 25th and 75th percentiles, with upper and lower whiskers corresponding to 1.5 times the IQR from the 25th or 75th percentiles.", fig.width=90, fig.height=100}
-knitr::include_graphics("scripts/03_analysis/00_plots/new_figs/fig02_voccByResolution.png")
+knitr::include_graphics("scripts/03_analysis/00_plots/new_figs/fig02_voccByResolution_bio5.png")
 
 ```
 
