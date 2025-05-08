@@ -3,8 +3,9 @@ library(colorspace)
 library(terra)
 library(data.table)
 
-meso = rast("scripts/02_climate_velocity/output/mesoclimate/avg_daily_max_temp/vocc.tif")
-macro = rast("scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp/vocc.tif")
+meso = rast("scripts/02_climate_velocity/output/mesoclimate/avg_daily_max_temp/vocc.tif") # this is bio5
+# macro = rast("scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp/vocc.tif")
+macro = rast("scripts/02_climate_velocity/output/macroclimate/temp_bio5/vocc.tif")
 
 dem.micro = rast('data/topography/dem_reproj.tif')
 dem.micro = extend(dem.micro, 1)
@@ -29,13 +30,14 @@ landuse.macro = resample(landuse.micro, macro, method = "near")
 landuse.class = read.csv("data/Helmer_2012_Beard_vegetation/Helmer_classification.csv")
 landuse.class = landuse.class %>% dplyr::select(Value, LU_level_1)
 
-#maxtemp.pres.micro = rast("01_microclimate_models_update/mosaics/meanTmax/meanTmax_pres_02.tif")
-maxtemp.pres.micro = rast("data/microclim_3D/mosaics/meanTmax_pres_02.tif")
+# maxtemp.pres.micro = rast("data/microclim_3D/mosaics/meanTmax_pres_02.tif")
+maxtemp.pres.micro = rast("data/microclim_3D/mosaics/mosaics_temp_bio5/temp_bio5_20m/pres/temp_bio5_pres_02.tif")
 maxtemp.pres.micro = crop(maxtemp.pres.micro, dem.micro)
-#maxtemp.pres.meso = rast('./../Trinidad_microclimates/output2/present/microclima_100m/tmax.tif')
+
 maxtemp.pres.meso = rast('data/microclima_100m/present/tmax.tif')
-#maxtemp.pres.macro = rast('./../Trinidad_microclimates/data/chelsa/tasmax2015/tasmax2015_meanMonthly.tif')
-maxtemp.pres.macro = rast('data/chelsa/tasmax2015_meanMonthly.tif')
+
+# maxtemp.pres.macro = rast('data/chelsa/tasmax2015_meanMonthly.tif')
+maxtemp.pres.macro = rast('data/chelsa/tasmax2015_bio5_maxmonthly.tif')
 maxtemp.pres.macro = project(maxtemp.pres.macro, 'epsg:2067')
 
 micro.paidir = rast("scripts/03_analysis/02_voccAngles/pai_direction_micro.tif")
@@ -47,7 +49,8 @@ micro2d.1km.paidir = rast("scripts/03_analysis/02_voccAngles/pai_direction_macro
 # combine into raster for each scale
 
 # add micro3d (20m)
-micro3d = fread("data/dataframes/micro3d_canopy_dataframe_tmax_20m.csv")
+#micro3d = fread("data/dataframes/micro3d_canopy_dataframe_tmax_20m.csv")
+micro3d = fread("data/dataframes/micro3d_canopy_dataframe_tempbio5_20m.csv")
 landuse.micro.df = as.data.frame(landuse.micro, xy = T)
 colnames(landuse.micro.df)[3] = "landuse"
 landuse.micro.df = left_join(landuse.micro.df, landuse.class, by = c("landuse" = "Value"))
@@ -78,7 +81,8 @@ micro3d$scale = "Within-canopy"
 micro3d$resolution = "20m"
 
 # ADD 3D 100M RESOULTION --------------------------------------------------
-micro3d_100m = fread("data/dataframes/micro3d_canopy_dataframe_tmax_100m.csv")
+# micro3d_100m = fread("data/dataframes/micro3d_canopy_dataframe_tmax_100m.csv")
+micro3d_100m = fread("data/dataframes/micro3d_canopy_dataframe_tempbio5_100m.csv")
 landuse.meso.df = as.data.frame(landuse.meso, xy = T)
 colnames(landuse.meso.df)[3] = "landuse"
 landuse.meso.df = left_join(landuse.meso.df, landuse.class, by = c("landuse" = "Value"))
@@ -108,8 +112,10 @@ micro3d_100m$resolution = "100m"
 
 # ADD 3D 1KM RESOLUTION ---------------------------------------------------
 
-micro3d_1km = fread("data/dataframes/micro3d_canopy_dataframe_tmax_1km.csv")
-micro3d_1km_rast = rast("scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_1km/vocc_05m.tif")
+# micro3d_1km = fread("data/dataframes/micro3d_canopy_dataframe_tmax_1km.csv")
+micro3d_1km = fread("data/dataframes/micro3d_canopy_dataframe_tempbio5_1km.csv")
+#micro3d_1km_rast = rast("scripts/02_climate_velocity/output/3D/avg_daily_maxTemp/aggregated_1km/vocc_05m.tif")
+micro3d_1km_rast = rast("scripts/02_climate_velocity/output/3D/temp_bio5/aggregated_1km/vocc_05m.tif")
 landuse.macro = resample(landuse.micro, micro3d_1km_rast, method = "near")
 landuse.macro.df = as.data.frame(landuse.macro, xy = T)
 colnames(landuse.macro.df)[3] = "landuse"
@@ -143,8 +149,9 @@ micro3d_1km$resolution = "1km"
 df = bind_rows(micro3d, micro3d_100m, micro3d_1km) %>% 
   mutate(resolution = factor(resolution, levels = c("1km", "100m", "20m")))
 
-fwrite(df, "data/dataframes/analysis_dataframe_3d_full_maxtemp.csv", row.names = F)
+# fwrite(df, "data/dataframes/analysis_dataframe_3d_full_maxtemp.csv", row.names = F)
 
+fwrite(df, "data/dataframes/analysis_dataframe_3d_full_tempbio5.csv", row.names = F)
 
 
 # MIN TEMP ----------------------------------------------------------------

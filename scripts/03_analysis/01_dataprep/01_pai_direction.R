@@ -62,7 +62,9 @@ writeRaster(pai.dir.meso[[1]][['xyAng']], 'scripts/03_analysis/02_voccAngles/pai
 
 ## Macro pai direction----------------------------------------------------------##
 # load macro climvocc as a template for resampling
-macro = rast('scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp/vocc.tif', lyrs = c('vocc'))
+#macro = rast('scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp/vocc.tif', lyrs = c('vocc'))
+macro = rast('scripts/02_climate_velocity/output/macroclimate/temp_bio5/vocc.tif', lyrs = c('vocc'))
+
 
 # load pai raster and resample to macro resolution
 pai.macro = resample(pai, macro)

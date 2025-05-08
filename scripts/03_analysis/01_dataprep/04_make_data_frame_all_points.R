@@ -4,17 +4,30 @@ library(terra)
 library(data.table)
 
 
-micro2d = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/vocc_02m.tif")
-micro2d.100m = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/aggregated_100m/vocc.tif")
-micro2d.1km = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/aggregated_1km/vocc.tif")
-meso = rast("scripts/02_climate_velocity/output/mesoclimate/avg_daily_max_temp/vocc.tif")
-macro = rast("scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp/vocc.tif")
+# micro2d = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/vocc_02m.tif")
+# micro2d.100m = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/aggregated_100m/vocc.tif")
+# micro2d.1km = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/aggregated_1km/vocc.tif")
+# meso = rast("scripts/02_climate_velocity/output/mesoclimate/avg_daily_max_temp/vocc.tif")
+# macro = rast("scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp/vocc.tif")
 
-tempgrad.micro2d = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/temporalGradient_02m.tif")
-tempgrad.micro2d.100m = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/aggregated_100m/tempgrad.tif")
-tempgrad.micro2d.1km = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/aggregated_1km/tempgrad.tif")
+micro2d = rast("scripts/02_climate_velocity/output/2D/temp_bio5/vocc_02m.tif")
+micro2d.100m = rast("scripts/02_climate_velocity/output/2D/temp_bio5/aggregated_100m/vocc.tif")
+micro2d.1km = rast("scripts/02_climate_velocity/output/2D/temp_bio5/aggregated_1km/vocc.tif")
+meso = rast("scripts/02_climate_velocity/output/mesoclimate/avg_daily_max_temp/vocc.tif")
+macro = rast("scripts/02_climate_velocity/output/macroclimate/temp_bio5/vocc.tif")
+
+
+# tempgrad.micro2d = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/temporalGradient_02m.tif")
+# tempgrad.micro2d.100m = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/aggregated_100m/tempgrad.tif")
+# tempgrad.micro2d.1km = rast("scripts/02_climate_velocity/output/2D/avg_daily_maxTemp/aggregated_1km/tempgrad.tif")
+# tempgrad.meso = rast("scripts/02_climate_velocity/output/mesoclimate/avg_daily_max_temp/tempgrad.tif")
+# tempgrad.macro = rast("scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp/tempgrad.tif")
+
+tempgrad.micro2d = rast("scripts/02_climate_velocity/output/2D/temp_bio5/temporalGradient_02m.tif")
+tempgrad.micro2d.100m = rast("scripts/02_climate_velocity/output/2D/temp_bio5/aggregated_100m/tempgrad.tif")
+tempgrad.micro2d.1km = rast("scripts/02_climate_velocity/output/2D/temp_bio5/aggregated_1km/tempgrad.tif")
 tempgrad.meso = rast("scripts/02_climate_velocity/output/mesoclimate/avg_daily_max_temp/tempgrad.tif")
-tempgrad.macro = rast("scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp/tempgrad.tif")
+tempgrad.macro = rast("scripts/02_climate_velocity/output/macroclimate/temp_bio5/tempgrad.tif")
 
 dem.micro = rast('data/topography/dem_reproj.tif')
 dem.micro = extend(dem.micro, 1)
@@ -43,15 +56,18 @@ landuse.micro2d.1km = resample(landuse.micro, dem.micro2d.1km, method = "near")
 landuse.class = read.csv("data/Helmer_2012_Beard_vegetation/Helmer_classification.csv")
 landuse.class = landuse.class %>% dplyr::select(Value, LU_level_1)
 
-#maxtemp.pres.micro = rast("01_microclimate_models_update/mosaics/meanTmax/meanTmax_pres_02.tif")
-maxtemp.pres.micro = rast("data/microclim_3D/mosaics/meanTmax_pres_02.tif")
+# maxtemp.pres.micro = rast("data/microclim_3D/mosaics/meanTmax_pres_02.tif")
+maxtemp.pres.micro = rast("data/microclim_3D/mosaics/mosaics_temp_bio5/temp_bio5_20m/pres/temp_bio5_pres_02.tif")
 maxtemp.pres.micro = crop(maxtemp.pres.micro, dem.micro)
-maxtemp.pres.micro.100m = rast("data/microclim_3D/mosaics/aggregated_100m/meanTmax_pres_02.tif")
-maxtemp.pres.micro.1km = rast("data/microclim_3D/mosaics/aggregated_1km/meanTmax_pres_02.tif")
+# maxtemp.pres.micro.100m = rast("data/microclim_3D/mosaics/aggregated_100m/meanTmax_pres_02.tif")
+# maxtemp.pres.micro.1km = rast("data/microclim_3D/mosaics/aggregated_1km/meanTmax_pres_02.tif")
+maxtemp.pres.micro.100m = rast("data/microclim_3D/mosaics/mosaics_temp_bio5/aggregated_100m/pres/temp_bio5_pres_02.tif")
+maxtemp.pres.micro.1km = rast("data/microclim_3D/mosaics/mosaics_temp_bio5/aggregated_1km/pres/temp_bio5_pres_02.tif")
 #maxtemp.pres.meso = rast('./../Trinidad_microclimates/output2/present/microclima_100m/tmax.tif')
 maxtemp.pres.meso = rast('data/microclima_100m/present/tmax.tif')
 #maxtemp.pres.macro = rast('./../Trinidad_microclimates/data/chelsa/tasmax2015/tasmax2015_meanMonthly.tif')
-maxtemp.pres.macro = rast('data/chelsa/tasmax2015_meanMonthly.tif')
+# maxtemp.pres.macro = rast('data/chelsa/tasmax2015_meanMonthly.tif')
+maxtemp.pres.macro = rast('data/chelsa/tasmax2015_bio5_maxmonthly.tif')
 maxtemp.pres.macro = project(maxtemp.pres.macro, 'epsg:2067')
 
 micro.paidir = rast("scripts/03_analysis/02_voccAngles/pai_direction_micro.tif")
@@ -184,7 +200,8 @@ macro$resolution = "1km"
 
 # add 3D dataframe --------------------------------------------------------
 
-micro3d = fread("data/dataframes/analysis_dataframe_3d_full_maxtemp.csv")
+# micro3d = fread("data/dataframes/analysis_dataframe_3d_full_maxtemp.csv")
+micro3d = fread("data/dataframes/analysis_dataframe_3d_full_tempbio5.csv")
 df_maxtemp = bind_rows(macro, meso, micro2d, micro2d.100m, micro2d.1km, micro3d)
 
 # # add micro3d (20m)
@@ -272,7 +289,8 @@ df_maxtemp = bind_rows(macro, meso, micro2d, micro2d.100m, micro2d.1km, micro3d)
 #   mutate(scale = factor(scale, levels = c("Macro", "Topo", "Land-surface", "Within-canopy")),
 #          resolution = factor(resolution, levels = c("1km", "100m", "20m")))
 
-fwrite(df_maxtemp, "data/dataframes/analysis_dataframe_full_maxtemp2.csv", row.names = F)
+# fwrite(df_maxtemp, "data/dataframes/analysis_dataframe_full_maxtemp2.csv", row.names = F)
+fwrite(df_maxtemp, "data/dataframes/analysis_dataframe_full_tempbio5.csv", row.names = F)
 
 
 
