@@ -12,6 +12,7 @@ library(viridis)
 library(colorspace)
 library(data.table)
 library(grid)
+library(ggh4x)
 
 plot_climvocc = function(r, var, hill_plot, plt_lab, legend.title, roundto, brk_vect) {
   r.df = as.data.frame(r[[var]], xy = T)
@@ -106,8 +107,7 @@ hill_plot = ggplot() +
   theme_classic()
 
 # includes only forested land use
-vocc.df = fread("scripts/03_analysis/00_dataframes/analysis_dataframe_full_mintemp.csv")
-
+vocc.df = fread("data/dataframes/analysis_dataframe_full_mintemp.csv")
 # air_1km = vocc.df %>% 
 #   filter(scale == "Macro" & resolution == "1km") %>% 
 #   dplyr::select(x,y,vocc, spatgrad, tempgrad) %>% 
@@ -180,7 +180,8 @@ vocc.df = vocc.df %>%
                            scale == "Topo" ~ "Free-air",
                            scale == "Land-surface" ~ "Land\nsurface",
                            scale == "Within-canopy" ~ "Within\ncanopy",
-                           .default = scale))
+                           .default = scale),
+         resolution = factor(resolution, levels = c("1km", "100m", "20m")))
 
 # df %>%   
 #   group_by(scale, resolution) %>% 
@@ -195,11 +196,11 @@ vocc.df = vocc.df %>%
 #   theme_classic()
 
 p = ggplot() +
+  facet_grid2(rows = vars(scale), cols = vars(resolution), render_empty = F) +
+  geom_spatvector(data = nrange, color = NA, fill = "gray80", linewidth = 0.5) +
   geom_raster(data = vocc.df, aes(x, y, fill = log10(abs(vocc)))) +
-  facet_grid(rows = vars(scale), cols = vars(resolution)) +
-  geom_spatvector(data = nrange, color = "black", fill = NA, linewidth = 0.5) +
   scale_x_continuous(expand = c(0,0)) +
-  scale_fill_viridis_c("Maximum temperature Velocity (m/yr)",
+  scale_fill_viridis_c("Minimum temperature Velocity (m/yr)",
                        option = "turbo",
                        breaks = seq(-4,2,1), labels = 10^(seq(-4,2,1))) +
   coord_sf(crs = "epsg:2067") +
@@ -337,9 +338,9 @@ vocc.df = vocc.df %>%
   mutate(resolution = factor(resolution, levels = c("1km", "100m", "20m")))
 
 p = ggplot() +
+  facet_grid2(rows = vars(scale), cols = vars(resolution), render_empty = F) +
+  geom_spatvector(data = nrange, color = NA, fill = "gray80", linewidth = 0.5) +
   geom_raster(data = vocc.df, aes(x, y, fill = jenksbr)) +
-  facet_grid(rows = vars(scale), cols = vars(resolution)) +
-  geom_spatvector(data = nrange, color = "black", fill = NA, linewidth = 0.5) +
   scale_x_continuous(expand = c(0,0)) +
   # scale_color_continuous_diverging(palette = "Blue-Red",
   #                                  breaks = c(-40,20,0,20,40),
@@ -416,15 +417,15 @@ vocc.df = vocc.df %>%
   mutate(resolution = factor(resolution, levels = c("1km", "100m", "20m")))
 
 p = ggplot() +
+  facet_grid2(rows = vars(scale), cols = vars(resolution), render_empty = F) +
+  geom_spatvector(data = nrange, color = NA, fill = "gray80", linewidth = 0.5) +
   geom_raster(data = vocc.df, aes(x, y, fill = jenksbr)) +
-  facet_grid(rows = vars(scale), cols = vars(resolution)) +
-  geom_spatvector(data = nrange, color = "black", fill = NA, linewidth = 0.5) +
   scale_x_continuous(expand = c(0,0)) +
   # scale_color_continuous_diverging(palette = "Blue-Red",
   #                                  breaks = c(-40,20,0,20,40),
   #                                  labels = c(r.jenksbr.neg$brks[1], r.jenksbr.neg$brks[21], 0, r.jenksbr.pos$brks[21], r.jenksbr.pos$brks[41]),
   #                                  legend.title, na.value = NA) +
-  scale_fill_gradientn(colors = diverging_hcl(palette = "Blue-Red", n = 81), breaks = c(-40, -30, -20,-10, 0, 10, 20, 30, 40),
+  scale_fill_gradientn(colors = diverging_hcl(palette = "Blue-Red3", n = 81), breaks = c(-40, -30, -20,-10, 0, 10, 20, 30, 40),
                        labels = round(c(r.jenksbr.neg$brks[1], r.jenksbr.neg$brks[11],
                                         r.jenksbr.neg$brks[21], r.jenksbr.neg$brks[31],
                                         0, r.jenksbr.pos$brks[11], r.jenksbr.pos$brks[21], 
@@ -496,9 +497,9 @@ vocc.df = vocc.df %>%
 
 
 p = ggplot() +
+  facet_grid2(rows = vars(scale), cols = vars(resolution), render_empty = F) +
+  geom_spatvector(data = nrange, color = NA, fill = "gray80", linewidth = 0.5) +
   geom_raster(data = vocc.df, aes(x, y, fill = mintemp.pres)) +
-  facet_grid(rows = vars(scale), cols = vars(resolution)) +
-  geom_spatvector(data = nrange, color = "black", fill = NA, linewidth = 0.5) +
   scale_x_continuous(expand = c(0,0)) +
   scale_fill_viridis_c("Minimum temperature (\u00b0C)", option = "turbo") +
   coord_sf(crs = "epsg:2067") +
