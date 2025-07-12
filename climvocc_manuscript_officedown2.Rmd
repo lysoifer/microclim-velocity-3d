@@ -108,7 +108,7 @@ Accounting for impacts of vegetation on microclimates reduced climate velocities
 ```{r}
 # compare vocc free-air to understory and within-canopy
 #source("scripts/04_plot_code/extended_dt1.R") # takes a long time to run, so saved dataframe
-extdf1 = read.csv(here::here("data/dataframes/extended_dt1_bio5.csv"))
+extdf1 = read.csv(here::here("data/dataframes/extended_dt1_bio5.csv")) # includes max and min temps (maxtemp = bio5)
 
 max.land.1km.sp = extdf1 %>% 
   filter(var == "maxtemp" & scale == "Land-surface" & resolution == "1km") %>% 
@@ -374,7 +374,11 @@ tab = extdf1 %>%
   mutate(var = case_when(var == "maxtemp" ~ "Maximum temperature (\u00b0C)",
                          var == "mintemp" ~ "Minimum temperature (\u00b0C)"),
          spatgrad = case_when(spatgrad < 0.001 ~ "<0.001",
-                              .default = as.character(spatgrad))) %>% 
+                              .default = as.character(spatgrad)),
+         upslopecor.pval = ifelse(upslopecor.pval==0, "<0.001", paste0(upslopecor.pval)),
+         paicor.pval = ifelse(paicor.pval==0, "<0.001", paste0(paicor.pval))) %>% 
+  relocate(upslopecor.pval, .after = upslopecor.rho) %>% 
+  relocate(paicor.pval, .after = paicor.rho) %>% 
   rename(Variable = var, Proximity = scale, Resolution = resolution, "Velocity (m/yr)" = vocc, 
          "Temporal gradient (\u00b0C/yr)" = tempgrad,
          "Spatial gradient (m/yr)" = spatgrad, "pelev" = upslopecor.pval,
@@ -382,16 +386,17 @@ tab = extdf1 %>%
          "pveg" = paicor.pval, 
          "rhoveg" = paicor.rho)
 
-
 tab = flextable(tab) %>% 
   merge_v(j = c(1,2)) %>% 
-  bg(i=c(1,2,6,7,8,11,12,13), j =3:8 , bg = "gray", part = "body") %>% 
+  bg(i=c(1,2,6,7,8,11,12,13), j =3:10, bg = "gray", part = "body") %>% 
   vline(j=1:2) %>% 
   hline(i=8, border = fp_border(width = 2)) %>% 
   flextable::align(j=c(3,6), align = "right", part = c("all"))%>% 
   autofit()
 
 tab
+
+formatCustomFlextable(tab)
 ```
 
 
@@ -442,6 +447,7 @@ source("scripts/03_analysis/02_compareScales/voccSpeed_Canopy-v-Understory.R")
 tab %>% 
   mutate(resolution = factor(resolution, levels = c("1km", "100m", "20m"))) %>% 
   mutate_at(.cols = 4:6, .funs = function(x){round(x, 3)}) %>% 
+  mutate(spatgrad = ifelse(spatgrad<0.001, "<0.001", paste0(spatgrad))) %>% 
   rename("Velocity" = vocc, "Temporal gradient" = tempgrad, "Spatial gradient" = spatgrad) %>% 
   flextable() %>% 
   merge_v(j = c(1,2)) %>% 
