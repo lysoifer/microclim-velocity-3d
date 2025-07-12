@@ -46,8 +46,8 @@ vocc.all = rbind(vocc.df, vocc.tmin) %>%
 # Figure 2: Impacts of vegetation regardless of spatial scale -----------------------
 
 scales = list(
-  scale_y_continuous(limits = c(0,100)),
-  scale_y_continuous(limits = c(0,100)),
+  scale_y_continuous(limits = c(0,250)),
+  scale_y_continuous(limits = c(0,250)),
   scale_y_continuous(limits = c(0,0.04)),
   scale_y_continuous(limits = c(-0.005,0.015)),
   scale_y_continuous(limits = c(0,0.3)),
@@ -98,7 +98,7 @@ ggsave("scripts/03_analysis/00_plots/new_figs/fig_02_voccByProximity_bio5.png", 
 # Figure 3: Impact of spatial scale on forest velocities ------------------
 
 scales = list(
-  scale_y_continuous(limits = c(0,100)),
+  scale_y_continuous(limits = c(0,200)),
   scale_y_continuous(limits = c(0,60)),
   scale_y_continuous(limits = c(0,0.04)),
   scale_y_continuous(limits = c(-0.005,0.012)),

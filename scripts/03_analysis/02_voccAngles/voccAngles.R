@@ -7,7 +7,8 @@ library(terra)
 library(data.table)
 library(ggh4x)
 
-maxtemp = fread("data/dataframes/analysis_dataframe_full_maxtemp.csv")
+# maxtemp = fread("data/dataframes/analysis_dataframe_full_maxtemp.csv")
+maxtemp = fread("data/dataframes/analysis_dataframe_full_tempbio5.csv")
 mintemp = fread("data/dataframes/analysis_dataframe_full_mintemp.csv")
 
 maxtemp$var = "maxtemp"
@@ -100,7 +101,8 @@ df.3d = df.3d %>%
 df3d.summ = df.3d %>% 
   reframe(n = n(),
           perc_down_vect = sum(zAng < 1)/n*100) # percentage of downward pointing vectors (zAng < 0)
-write.csv(df3d.summ, "data/dataframes/zAngle_summary.csv", row.names = F)
+# write.csv(df3d.summ, "data/dataframes/zAngle_summary.csv", row.names = F)
+write.csv(df3d.summ, "data/dataframes/zAngle_summary_bio5.csv", row.names = F)
 
 
 # Takes a long time to plot
@@ -112,9 +114,9 @@ write.csv(df3d.summ, "data/dataframes/zAngle_summary.csv", row.names = F)
 #   scale_y_continuous("Relative canopy height") +
 #   facet_grid(cols = vars(resolution), rows = vars(var)) +
 #   theme_classic()
-# 
-# ggsave("scripts/03_analysis/00_plots/supplemental_figs/vert_to_horiz_ratio.png", width = 7, height = 4)
 
+# ggsave("scripts/03_analysis/00_plots/supplemental_figs/vert_to_horiz_ratio.png", width = 7, height = 4)
+# ggsave("scripts/03_analysis/00_plots/supplemental_figs/vert_to_horiz_ratio_tempbio5.png", width = 7, height = 4)
 
 # Figure 4 ----------------------------------------------------------------
 
@@ -147,10 +149,13 @@ p = ggplot(df, aes(x = ang, y = freq, color = scale)) +
         legend.title = element_blank(),
         legend.position = "bottom")
 
-svg('scripts/03_analysis/00_plots/new_figs/fig04_voccangles.svg', width = 7, height = 5)
+# svg('scripts/03_analysis/00_plots/new_figs/fig04_voccangles.svg', width = 7, height = 5)
+# p
+# dev.off()
+
+svg('scripts/03_analysis/00_plots/new_figs/fig04_voccangles_tempbio5.svg', width = 7, height = 5)
 p
 dev.off()
-
 
 
 # vertical space ----------------------------------------------------------

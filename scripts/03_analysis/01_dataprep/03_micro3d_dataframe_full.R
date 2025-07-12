@@ -65,7 +65,7 @@ micro3d = micro3d %>%
   left_join(micro.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
 
-micro3d = micro3d[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
+micro3d = micro3d[vocc < quantile(vocc, probs = 0.99, na.rm = T),]
 micro3d = micro3d[!is.na(vocc), ]
 micro3d = micro3d %>% filter(LU_level_1 == "Forest including forest/shrub land")
 
@@ -95,7 +95,7 @@ micro3d_100m = micro3d_100m %>%
   left_join(pai.meso.df, by = c("x", "y")) %>% 
   left_join(meso.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
-micro3d_100m = micro3d_100m[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
+micro3d_100m = micro3d_100m[vocc < quantile(vocc, probs = 0.99, na.rm = T),]
 micro3d_100m = micro3d_100m[!is.na(vocc), ]
 micro3d_100m = micro3d_100m %>% filter(LU_level_1 == "Forest including forest/shrub land")
 
@@ -130,7 +130,7 @@ micro3d_1km = micro3d_1km %>%
   left_join(pai.macro.df, by = c("x", "y")) %>% 
   left_join(micro2d.1km.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
-micro3d_1km = micro3d_1km[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
+micro3d_1km = micro3d_1km[vocc < quantile(vocc, probs = 0.99, na.rm = T),]
 micro3d_1km = micro3d_1km[!is.na(vocc), ]
 micro3d_1km = micro3d_1km %>% filter(LU_level_1 == "Forest including forest/shrub land")
 
@@ -176,7 +176,7 @@ landuse.macro = resample(landuse.micro, macro, method = "near")
 landuse.class = read.csv("data/Helmer_2012_Beard_vegetation/Helmer_classification.csv")
 landuse.class = landuse.class %>% dplyr::select(Value, LU_level_1)
 
-mintemp.pres.micro = rast("data/microclim_3D/mosaics_temp_bio6/pres/temp_bio6_pres_02.tif")
+mintemp.pres.micro = rast("data/microclim_3D/mosaics/mosaics_temp_bio6/temp_bio6_20m/pres/temp_bio6_pres_02.tif")
 mintemp.pres.micro = crop(mintemp.pres.micro, dem.micro)
 mintemp.pres.meso = rast('data/microclima_100m/present/tmin.tif')
 mintemp.pres.macro = rast('data/chelsa/tasmin2015_bio6.tif')
@@ -199,7 +199,7 @@ micro3d = micro3d %>%
   left_join(pai.micro.df, by = c("x", "y")) %>% 
   left_join(micro.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
-micro3d = micro3d[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
+micro3d = micro3d[vocc < quantile(vocc, probs = 0.99, na.rm = T),]
 micro3d = micro3d[!is.na(vocc), ]
 micro3d = micro3d %>% filter(LU_level_1 == "Forest including forest/shrub land")
 
@@ -231,7 +231,7 @@ micro3d_100m = micro3d_100m %>%
   left_join(pai.meso.df, by = c("x", "y")) %>% 
   left_join(meso.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
-micro3d_100m = micro3d_100m[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
+micro3d_100m = micro3d_100m[vocc < quantile(vocc, probs = 0.99, na.rm = T),]
 micro3d_100m = micro3d_100m[!is.na(vocc), ]
 micro3d_100m = micro3d_100m %>% filter(LU_level_1 == "Forest including forest/shrub land")
 
@@ -265,7 +265,7 @@ micro3d_1km = micro3d_1km %>%
   left_join(pai.macro.df, by = c("x", "y")) %>% 
   left_join(micro2d.1km.paidir.df, by = c("x", "y")) %>% 
   mutate(vocc = abs(vocc))
-micro3d_1km = micro3d_1km[vocc < quantile(vocc, probs = 0.95, na.rm = T),]
+micro3d_1km = micro3d_1km[vocc < quantile(vocc, probs = 0.99, na.rm = T),]
 micro3d_1km = micro3d_1km[!is.na(vocc), ]
 micro3d_1km = micro3d_1km %>% filter(LU_level_1 == "Forest including forest/shrub land")
 

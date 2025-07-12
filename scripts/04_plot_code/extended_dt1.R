@@ -5,6 +5,9 @@ source("scripts/03_analysis/02_voccAngles/voccAngles.R")
 # tmax = fread("data/dataframes/analysis_dataframe_full_maxtemp.csv")
 # tmin = fread("data/dataframes/analysis_dataframe_full_mintemp.csv")
 
+# maxtemp = fread("data/dataframes/analysis_dataframe_full_tempbio5.csv")
+# mintemp = fread("data/dataframes/analysis_dataframe_full_mintemp.csv")
+
 tmax.summ = maxtemp %>% 
   group_by(var, scale, resolution) %>% 
   summarize(vocc = median(vocc, na.rm = T),
@@ -34,7 +37,9 @@ df.cor = bind_rows(maxtemp.cor, mintemp.cor) %>%
                            .default = scale))
 
 extdt1 = inner_join(df.summ, df.cor, by = c("scale", "var", "resolution"))
-write.csv(extdt1, "data/dataframes/extended_dt1.csv", row.names = F)
+# write.csv(extdt1, "data/dataframes/extended_dt1.csv", row.names = F)
+write.csv(extdt1, "data/dataframes/extended_dt1_bio5.csv", row.names = F)
+
 
 # paicor.df = paicor.df %>% 
 #   mutate(resolution = case_when(scale == "macro" ~ "1km",

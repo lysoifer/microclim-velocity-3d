@@ -13,7 +13,7 @@ library(data.table)
 micro2d = rast("scripts/02_climate_velocity/output/2D/temp_bio5/vocc_02m.tif")
 micro2d.100m = rast("scripts/02_climate_velocity/output/2D/temp_bio5/aggregated_100m/vocc.tif")
 micro2d.1km = rast("scripts/02_climate_velocity/output/2D/temp_bio5/aggregated_1km/vocc.tif")
-meso = rast("scripts/02_climate_velocity/output/mesoclimate/avg_daily_max_temp/vocc.tif")
+meso = rast("scripts/02_climate_velocity/output/mesoclimate/avg_daily_max_temp/vocc.tif") # this is max temp (temp_bio5)
 macro = rast("scripts/02_climate_velocity/output/macroclimate/temp_bio5/vocc.tif")
 
 
@@ -89,7 +89,7 @@ micro2d = micro2d %>%
   as.data.frame(xy = T) %>% 
   mutate(vocc = ifelse(vocc == Inf, NA, vocc),
          vocc = abs(vocc)) %>% 
-  filter(vocc < quantile(vocc, probs = 0.95, na.rm = T)) %>% 
+  filter(vocc < quantile(vocc, probs = 0.99, na.rm = T)) %>% 
   drop_na()
 
 micro2d = left_join(micro2d, landuse.class, by = c("landuse" = "Value"))
@@ -118,7 +118,7 @@ micro2d.100m = micro2d.100m %>%
   as.data.frame(xy = T) %>% 
   mutate(vocc = ifelse(vocc == Inf, NA, vocc),
          vocc = abs(vocc)) %>% 
-  filter(vocc < quantile(vocc, probs = 0.95, na.rm = T)) %>% 
+  filter(vocc < quantile(vocc, probs = 0.99, na.rm = T)) %>% 
   drop_na()
 
 micro2d.100m = left_join(micro2d.100m, landuse.class, by = c("landuse" = "Value"))
@@ -143,7 +143,7 @@ micro2d.1km = micro2d.1km %>%
   as.data.frame(xy = T) %>% 
   mutate(vocc = ifelse(vocc == Inf, NA, vocc),
          vocc = abs(vocc)) %>% 
-  filter(vocc < quantile(vocc, probs = 0.95, na.rm = T)) %>% 
+  filter(vocc < quantile(vocc, probs = 0.99, na.rm = T)) %>% 
   drop_na()
 
 micro2d.1km = left_join(micro2d.1km, landuse.class, by = c("landuse" = "Value"))
@@ -166,7 +166,7 @@ meso = meso %>%
   as.data.frame(xy = T) %>% 
   mutate(vocc = ifelse(vocc == Inf, NA, vocc),
          vocc = abs(vocc)) %>% 
-  filter(vocc < quantile(vocc, probs = 0.95, na.rm = T)) %>% 
+  filter(vocc < quantile(vocc, probs = 0.99, na.rm = T)) %>% 
   drop_na() 
 
 meso = left_join(meso, landuse.class, by = c("landuse" = "Value"))
@@ -187,8 +187,13 @@ names(macro) = c("vocc", "spatgrad", "xyAng", "NSdir", "EWdir", "tempgrad",
 macro = macro %>% 
   as.data.frame(xy = T) %>% 
   mutate(vocc = abs(vocc)) %>% 
-  filter(vocc < quantile(vocc, probs = 0.95, na.rm = T)) %>% 
+  filter(vocc < quantile(vocc, probs = 0.99, na.rm = T)) %>% 
   drop_na() 
+
+ggplot(macro, aes(x,y, fill = vocc)) +
+  geom_raster() +
+  geom_spatvector(data = nrange, color = "black", fill = NA, linewidth = 0.5, inherit.aes = F) +
+  coord_sf(crs = "epsg:2067")
 
 macro = left_join(macro, landuse.class, by = c("landuse" = "Value"))
 macro = macro %>% 
@@ -196,8 +201,7 @@ macro = macro %>%
 macro$var = "maxtemp"
 macro$scale = "Macro"
 macro$resolution = "1km"
-
-
+  
 # add 3D dataframe --------------------------------------------------------
 
 # micro3d = fread("data/dataframes/analysis_dataframe_3d_full_maxtemp.csv")
@@ -335,10 +339,10 @@ landuse.micro2d.1km = resample(landuse.micro, dem.micro2d.1km, method = "near")
 landuse.class = read.csv("data/Helmer_2012_Beard_vegetation/Helmer_classification.csv")
 landuse.class = landuse.class %>% dplyr::select(Value, LU_level_1)
 
-mintemp.pres.micro = rast("data/microclim_3D/mosaics_temp_bio6/pres/temp_bio6_pres_02.tif")
+mintemp.pres.micro = rast("data/microclim_3D/mosaics/mosaics_temp_bio6/temp_bio6_20m/pres/temp_bio6_pres_02.tif")
 mintemp.pres.micro = crop(mintemp.pres.micro, dem.micro)
-mintemp.pres.micro.100m = rast("data/microclim_3D/mosaics_temp_bio6/pres/aggregated_100m/temp_bio6_pres_02.tif")
-mintemp.pres.micro.1km = rast("data/microclim_3D/mosaics_temp_bio6/pres/aggregated_1km/temp_bio6_pres_02.tif")
+mintemp.pres.micro.100m = rast("data/microclim_3D/mosaics/mosaics_temp_bio6/aggregated_100m/pres/temp_bio6_pres_02.tif")
+mintemp.pres.micro.1km = rast("data/microclim_3D/mosaics/mosaics_temp_bio6/aggregated_1km/pres/temp_bio6_pres_02.tif")
 mintemp.pres.meso = rast('data/microclima_100m/present/tmin.tif')
 mintemp.pres.macro = rast('data/chelsa/tasmin2015_bio6.tif')
 mintemp.pres.macro = project(mintemp.pres.macro, 'epsg:2067')
@@ -362,7 +366,7 @@ micro2d = micro2d %>%
   as.data.frame(xy = T) %>% 
   mutate(vocc = ifelse(vocc == Inf, NA, vocc),
          vocc = abs(vocc)) %>% 
-  filter(vocc < quantile(vocc, probs = 0.95, na.rm = T)) %>% 
+  filter(vocc < quantile(vocc, probs = 0.99, na.rm = T)) %>% 
   drop_na()
 
 micro2d = left_join(micro2d, landuse.class, by = c("landuse" = "Value"))
@@ -394,7 +398,7 @@ micro2d.100m = micro2d.100m %>%
   as.data.frame(xy = T) %>% 
   mutate(vocc = ifelse(vocc == Inf, NA, vocc),
          vocc = abs(vocc)) %>% 
-  filter(vocc < quantile(vocc, probs = 0.95, na.rm = T)) %>% 
+  filter(vocc < quantile(vocc, probs = 0.99, na.rm = T)) %>% 
   drop_na()
 
 micro2d.100m = left_join(micro2d.100m, landuse.class, by = c("landuse" = "Value"))
@@ -430,7 +434,7 @@ micro2d.1km = micro2d.1km %>%
   as.data.frame(xy = T) %>% 
   mutate(vocc = ifelse(vocc == Inf, NA, vocc),
          vocc = abs(vocc)) %>% 
-  filter(vocc < quantile(vocc, probs = 0.95, na.rm = T)) %>% 
+  filter(vocc < quantile(vocc, probs = 0.99, na.rm = T)) %>% 
   drop_na()
 
 micro2d.1km = left_join(micro2d.1km, landuse.class, by = c("landuse" = "Value"))
@@ -453,7 +457,7 @@ meso = meso %>%
   as.data.frame(xy = T) %>% 
   mutate(vocc = ifelse(vocc == Inf, NA, vocc),
          vocc = abs(vocc)) %>% 
-  filter(vocc < quantile(vocc, probs = 0.95, na.rm = T)) %>% 
+  filter(vocc < quantile(vocc, probs = 0.99, na.rm = T)) %>% 
   drop_na() 
 
 meso = left_join(meso, landuse.class, by = c("landuse" = "Value"))
@@ -475,7 +479,7 @@ names(macro) = c("vocc", "spatgrad", "xyAng", "NSdir", "EWdir", "tempgrad",
 macro = macro %>% 
   as.data.frame(xy = T) %>% 
   mutate(vocc = abs(vocc)) %>%
-  filter(vocc < quantile(vocc, probs = 0.95, na.rm = T)) %>% 
+  filter(vocc < quantile(vocc, probs = 0.99, na.rm = T)) %>% 
   drop_na() 
 
 macro = left_join(macro, landuse.class, by = c("landuse" = "Value"))
@@ -578,6 +582,6 @@ df_mintemp = bind_rows(macro, meso, micro2d, micro2d.100m, micro2d.1km, mintemp3
 #   mutate(scale = factor(scale, levels = c("Macro", "Topo", "Land-surface", "Within-canopy")),
 #          resolution = factor(resolution, levels = c("1km", "100m", "20m")))
 # 
-fwrite(df_mintemp, "data/dataframes/analysis_dataframe_full_mintemp2.csv", row.names = F)
+fwrite(df_mintemp, "data/dataframes/analysis_dataframe_full_mintemp.csv", row.names = F)
 
 

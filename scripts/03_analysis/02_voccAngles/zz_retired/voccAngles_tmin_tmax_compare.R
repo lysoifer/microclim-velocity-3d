@@ -1,3 +1,4 @@
+# NOT CURRENTLY IN USE
 library(tidyverse)
 library(ggplot2)
 library(patchwork)
@@ -7,7 +8,7 @@ library(terra)
 library(data.table)
 library(Directional)
 
-tmax.macro = rast("scripts/02_climate_velocity/output/macroclimate/mean_monthly_max_temp/vocc.tif", lyrs = c("vocc", "xyAng"))
+tmax.macro = rast("scripts/02_climate_velocity/output/macroclimate/temp_bio5/vocc.tif", lyrs = c("vocc", "xyAng"))
 tmin.macro = rast("scripts/02_climate_velocity/output/macroclimate/temp_bio6/vocc.tif", lyrs = c("vocc", "xyAng"))
 macro = c(tmax.macro, tmin.macro)
 names(macro) = c("tmax.vocc", "tmax.xyAng", "tmin.vocc", "tmin.xyAng")
@@ -58,6 +59,9 @@ minmax.cor = data.frame(scale = c("macro", "meso", "micro2d", "micro2d.100m", "m
                         cor = c(round(macro.minmax.cor[1], 2), round(meso.minmax.cor[1], 2),
                                 round(micro2d.minmax.cor[1], 2), round(micro2d.100m.minmax.cor[1], 2),
                                 round(micro2d.1km.minmax.cor[1], 2)))
+
+
+
 
 # Functions
 # calculates difference between two angles ( always positive)
