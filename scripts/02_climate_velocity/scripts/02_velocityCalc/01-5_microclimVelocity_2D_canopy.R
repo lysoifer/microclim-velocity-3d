@@ -98,6 +98,9 @@ foreach (i=c(1:length(past)), .packages=c('terra', 'data.table', 'numform')) %do
 }
 #stopCluster(cl)
 
+
+# Temp bio5 ---------------------------------------------------------------
+
 # bio5 temp
 past = rast('data/microclim_3D/mosaics_relhgt/mosaics_relhgt_20m/temp_bio5/temp_bio5_past.tif')
 pres = rast('data/microclim_3D/mosaics_relhgt/mosaics_relhgt_20m/temp_bio5/temp_bio5_pres.tif')
@@ -109,6 +112,12 @@ pres = pres[[4]]
 
 #cl = makeForkCluster(9)
 #registerDoParallel(cl)
+
+#test
+pasttest = crop(past, ext(660000,661000, 1186000,1190000))
+prestest = crop(pres, ext(660000,661000, 1186000,1190000))
+testcrop = crop(vocc_c.tmax.20, ext(660000,661000, 1186000,1190000))
+test = crop(vocc[[1]]$vocc, ext(660000,661000, 1186000,1190000))
 
 foreach (i=c(1:length(past)), .packages=c('terra', 'data.table', 'numform')) %do% {
   #past = rast(past[i])[[1]]
@@ -140,3 +149,18 @@ foreach (i=c(1:length(past)), .packages=c('terra', 'data.table', 'numform')) %do
 }
 #stopCluster(cl)
 
+
+pasttest = pasttest/100 # convert to degC
+#pres = rast(pres[i])[[1]]
+prestest = prestest/100 #convert to degC
+
+hgt = "q4"
+
+dem = rast('data/topography/dem_reproj.tif')
+dem = extend(dem, c(1,1))
+dem = crop(dem, pasttest)
+
+
+sp = spatgrad_2Dmicro(c(pasttest, prestest), projected = T, slope_correct = T, dem = dem, hgt = hgt)
+tg = tempGrad2(pasttest, prestest, 1960, 2015)
+vocc = gVocc_micro2D(tg,sp)
