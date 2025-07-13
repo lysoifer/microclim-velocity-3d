@@ -28,7 +28,7 @@ landuse.class = read.csv("data/Helmer_2012_Beard_vegetation/Helmer_classificatio
 landuse.class = landuse.class %>% dplyr::select(Value, LU_level_1)
 
 # tmax 20m  ---------------------------------------------------------------
-# UPDATE TO REMOVE TOP 5TH QUANTILE AND UPDATE TO TEMP BIO5
+
 vocc_u.tmax.20 = rast("scripts/02_climate_velocity/output/2D/temp_bio5/vocc_02m.tif")[[1]]
 vocc_c.tmax.20 = rast("scripts/02_climate_velocity/output/2D/temp_bio5_canopy/vocc_q4m.tif")[[1]]
 vocc_u.tmax.20 = crop(vocc_u.tmax.20, vocc_c.tmax.20)
@@ -79,13 +79,13 @@ tmax_c.20 = tmax_c.20 %>%
 
 tmax.20 = bind_rows(tmax_c.20, tmax_u.20)
 
-tmax.20 %>% 
-  filter(!is.infinite(vocc)) %>% 
-  drop_na() %>% 
-  slice_sample(n=10000) %>% 
-  ggplot(aes(height, tempgrad)) +
-  geom_boxplot() +
-  coord_cartesian(ylim = c(0,0.1))
+# tmax.20 %>% 
+#   filter(!is.infinite(vocc)) %>% 
+#   drop_na() %>% 
+#   slice_sample(n=10000) %>% 
+#   ggplot(aes(height, tempgrad)) +
+#   geom_boxplot() +
+#   coord_cartesian(ylim = c(0,0.1))
 
 
 # tmin 20m ----------------------------------------------------------------
@@ -381,3 +381,4 @@ tab = t %>%
             tempgrad = median(tempgrad),
             spatgrad = median(spatgrad))
 
+write.csv(tab, "data/dataframes/voccSpeed_canopy-v-understory_bio5.csv", row.names = F)
